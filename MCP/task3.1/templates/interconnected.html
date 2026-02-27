@@ -212,9 +212,11 @@
         
         function showDetails(d) {
             const detailsDiv = document.getElementById("details");
-            const relatedConnections = connections.filter(c => 
-                c.source === d.name || c.target === d.name
-            );
+            const relatedConnections = connections.filter(c => {
+                const sourceName = typeof c.source === "object" ? c.source.name : c.source;
+                const targetName = typeof c.target === "object" ? c.target.name : c.target;
+                return sourceName === d.name || targetName === d.name;
+            });
             
             let html = `
                 <h3 style="color: #667eea; margin-bottom: 10px;">${d.name}</h3>
@@ -231,7 +233,9 @@
                     <ul style="margin-top: 10px; padding-left: 20px;">
                 `;
                 relatedConnections.forEach(conn => {
-                    const other = conn.source === d.name ? conn.target : conn.source;
+                    const sourceName = typeof conn.source === "object" ? conn.source.name : conn.source;
+                    const targetName = typeof conn.target === "object" ? conn.target.name : conn.target;
+                    const other = sourceName === d.name ? targetName : sourceName;
                     html += `<li style="margin: 5px 0; color: #ccc;">${conn.type}: ${other}</li>`;
                 });
                 html += `</ul></div>`;

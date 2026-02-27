@@ -3,7 +3,7 @@
 import re
 import html
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Set
 
 
 def extract_balanced_braces(text: str, start_pos: int) -> Optional[str]:
@@ -25,6 +25,95 @@ def extract_balanced_braces(text: str, start_pos: int) -> Optional[str]:
         i += 1
     
     return None
+
+
+def strip_latex_comments(text: str) -> str:
+    """Remove LaTeX comments while preserving non-comment content.
+
+    - Removes full-line comments and trailing comments starting with %.
+    - Keeps escaped percent signs (\\%).
+    """
+    if not text:
+        return ""
+
+    cleaned_lines: list[str] = []
+    for line in text.split("\n"):
+        if "%" not in line:
+            cleaned_lines.append(line)
+            continue
+
+        comment_pos = line.find("%")
+        if comment_pos == 0:
+            cleaned_lines.append("")
+            continue
+
+        # If % is escaped, keep it (best-effort: only checks immediately preceding backslash)
+        if line[comment_pos - 1] == "\\":
+            cleaned_lines.append(line)
+            continue
+
+        cleaned_lines.append(line[:comment_pos])
+
+    return "\n".join(cleaned_lines)
+
+
+def resolve_latex_include_path(base_dir: Path, raw_path: str) -> Path:
+    """Resolve a LaTeX \\input/\\include path relative to base_dir."""
+    candidate = raw_path.strip().strip('"').strip("'")
+    candidate_path = Path(candidate)
+
+    if not candidate_path.suffix:
+        candidate_path = candidate_path.with_suffix(".tex")
+
+    if candidate_path.is_absolute():
+        return candidate_path
+
+    return (base_dir / candidate_path).resolve()
+
+
+def expand_latex_inputs(
+    content: str,
+    base_dir: Path,
+    visited: Optional[Set[Path]] = None,
+    max_depth: int = 25,
+    _depth: int = 0,
+) -> str:
+    """Recursively expand \\input{...} and \\include{...} directives.
+
+    This is needed because many LaTeX projects keep \\section commands in
+    separate files. We expand includes to reconstruct the full structure.
+    """
+    if visited is None:
+        visited = set()
+    if _depth > max_depth:
+        return content
+
+    content_no_comments = strip_latex_comments(content)
+
+    include_pattern = re.compile(r"\\(input|include)\s*\{([^}]+)\}")
+
+    def _replace(match: re.Match) -> str:
+        raw_path = match.group(2)
+        include_path = resolve_latex_include_path(base_dir, raw_path)
+
+        if include_path in visited:
+            return ""
+
+        if not include_path.exists():
+            return ""
+
+        visited.add(include_path)
+        try:
+            included_text = include_path.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            return ""
+
+        return expand_latex_inputs(
+            included_text, include_path.parent, visited=visited, max_depth=max_depth, _depth=_depth + 1
+        )
+
+    expanded = include_pattern.sub(_replace, content_no_comments)
+    return expanded
 
 
 def clean_latex_text(text: str) -> str:
@@ -160,7 +249,10 @@ async def parse_paper_structure(file_path: Optional[str] = None, file_content: O
     if file_path:
         file_ext = Path(file_path).suffix.lower()
         if file_ext == '.tex':
-            return parse_latex_structure(content, source)
+            # Expand \\input/\\include so \\section commands in subfiles are included
+            base_dir = Path(file_path).expanduser().resolve().parent
+            combined = expand_latex_inputs(content, base_dir=base_dir)
+            return parse_latex_structure(combined, source)
         elif file_ext in ['.html', '.htm']:
             return parse_html_structure(content, source)
         elif file_ext in ['.md', '.markdown']:
@@ -179,6 +271,28 @@ def parse_latex_structure(content: str, source: str) -> Dict:
     # Extract author (handling nested braces)
     author = extract_latex_author(content)
     
+    # Ignore sections after \\appendix/\\appendices (best-effort)
+    appendix_pos = None
+    appendix_match = re.search(r'\\appendix(?:es)?\b', content)
+    if appendix_match:
+        appendix_pos = appendix_match.start()
+
+    def should_ignore_heading(heading_text: str) -> bool:
+        heading_lower = heading_text.strip().lower()
+        if not heading_lower:
+            return True
+        ignore_keywords = [
+            "references",
+            "reference",
+            "bibliography",
+            "acknowledgments",
+            "acknowledgements",
+            "appendix",
+            "appendices",
+            "biography",
+        ]
+        return any(k in heading_lower for k in ignore_keywords)
+
     # Extract sections
     sections = []
     
@@ -193,9 +307,14 @@ def parse_latex_structure(content: str, source: str) -> Dict:
         level_type = match.group(1)
         heading = match.group(2)
         position = match.start()
+
+        if appendix_pos is not None and position >= appendix_pos:
+            continue
         
         # Clean heading (remove LaTeX commands)
         heading = clean_latex_text(heading)
+        if should_ignore_heading(heading):
+            continue
         
         # Get text excerpt (next 400 chars after heading, then clean)
         excerpt_start = match.end()

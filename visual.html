@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Structure: Efficient Transfer from Image-based Large Multimodal Models to Video Tasks</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .paper-title {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .paper-title h1 {
+            color: #2d3748;
+            font-size: 1.6em;
+            margin-bottom: 10px;
+        }
+        .paper-title .author {
+            color: #718096;
+            font-size: 0.95em;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+        .section.level-1 {
+            border-left-color: #667eea;
+        }
+        .section.level-2 {
+            border-left-color: #48bb78;
+        }
+        .section.level-3 {
+            border-left-color: #ed8936;
+        }
+        .section-heading {
+            color: #2d3748;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .section-excerpt {
+            color: #4a5568;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+        .subsection {
+            margin-left: 30px;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-left: 3px solid #cbd5e0;
+        }
+        .subsection-heading {
+            color: #2d3748;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .subsection-excerpt {
+            color: #718096;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        .subsubsection {
+            margin-left: 50px;
+            margin-top: 10px;
+            padding: 12px;
+            background: #edf2f7;
+            border-radius: 6px;
+            border-left: 2px solid #a0aec0;
+        }
+        .subsubsection-heading {
+            color: #2d3748;
+            font-size: 1.0em;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .subsubsection-excerpt {
+            color: #718096;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="paper-title">
+            <h1>Efficient Transfer from Image-based Large Multimodal Models to Video Tasks</h1>
+            <p class="author">Shidong Cao, Zhonghan Zhao, Shengyu Hao, Wenhao Chai, Jenq-Neng Hwang,~Life Fellow,~IEEE, Hongwei Wang[^],~Senior Member,~IEEE, and Gaoang Wang[^],~Member,~IEEE [^] Corresponding author: Hongwei Wang, Gaoang Wang. Shidong Cao, Zhonghan Zhao, and Shengyu Hao are with the Zhejiang University-University of Illinois Urbana-Champaign Institute, Zhejiang University, China (e-mail: 22271126@zju.edu.cn, zhaozhonghan@zju.edu.cn, shengyuhao@zju.edu.cn). Wenhao Chai and Jenq-Neng Hwang are with University of Washington, US (e-mail: wenhaochai.19@intl.zju.edu.cn, hwang@uw.edu). Hongwei Wang is with the Zhejiang University-University of Illinois Urbana-Champaign Institute, and College of Computer Science and Technology, Zhejiang University, China (e-mail: hongweiwang@zju.edu.cn). Gaoang Wang is with the Zhejiang University-University of Illinois Urbana-Champaign Institute, Zhejiang University, and Shanghai Artificial Intelligence Laboratory, China (e-mail: gaoangwang@intl.zju.edu.cn).</p>
+        </div>
+        
+        <div class="section level-1">
+            <h1 class="section-heading">Introduction</h1>
+            <p class="section-excerpt">Benefiting from vast pre-trained corpora and parameters, large language models (LLMs) [citation: touvron2023llama,liu2023summary,touvron2023llama2] have demonstrated remarkable capabilities in general...</p>
+        </div>
+        <div class="section level-1">
+            <h1 class="section-heading">Related Work</h1>
+            <p class="section-excerpt">Conversation and Speech Video Understanding The task of understanding dialogue and speeches in videos has always been a widely explored issue~[citation: han2021bi,liang2021multibench,zhang2021multi,41...</p>
+        
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Conversation and Speech Video Understanding</h2>
+                <p class="subsection-excerpt">The task of understanding dialogue and speeches in videos has always been a widely explored issue~[citation: han2021bi,liang2021multibench,zhang2021multi,4130374,10147343]. Most of the datasets~[citat...</p>
+            </div>
+            
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Video Large Language Models</h2>
+                <p class="subsection-excerpt">Large language models such as ChatGPT~[citation: liu2023summary] and LLAMA~[citation: touvron2023llama] have achieved tremendous success in the NLP field. Many works (like LLAVA~[citation: liu2023visu...</p>
+            </div>
+            
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Temporal Modeling</h2>
+                <p class="subsection-excerpt">With the advancement of AI, more attention is shifting from image to video understanding, including tasks like video question answering~[citation: li2022invariant,xiao2022video,10334011] and video act...</p>
+            </div>
+            </div>
+        <div class="section level-1">
+            <h1 class="section-heading">Methodology</h1>
+            <p class="section-excerpt">In this section, we provide a detailed introduction to our proposed MTransLLAMA framework, which efficiently transfers the image-based LMM to handle video understanding tasks. It preserves the extensi...</p>
+        
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Overview of MTransLLAMA</h2>
+                <p class="subsection-excerpt">Given the context [C] (including dialogues, instructions, questions, etc.) and the corresponding video [v R^T 3 H W] comprising [T] frames sampled from the video sequence, each of size [H W], our prop...</p>
+            </div>
+            
+                <div class="subsubsection level-3">
+                    <h3 class="subsubsection-heading">Multi-modal Spatial-temporal Early Fusion</h3>
+                    <p class="subsubsection-excerpt">Traditional video-based LMMs usually adopt the following mechanism for question answering (QA), i.e., equation C_o = LLM(E_t, f_{{}}(E_v,q)), equation where [C_o] is the answer generated by LLM; [f_{{...</p>
+                </div>
+                
+                <div class="subsubsection level-3">
+                    <h3 class="subsubsection-heading">Multi-modal Query Temporal Reusing</h3>
+                    <p class="subsubsection-excerpt">For LLM-based video understanding methods~[citation: zhang2023video,maaz2023video] that deal with temporal information, a separately trained temporal modeling module is typically required. However, pr...</p>
+                </div>
+                
+                <div class="subsubsection level-3">
+                    <h3 class="subsubsection-heading">Dynamic Attention Routing</h3>
+                    <p class="subsubsection-excerpt">Existing research~[citation: zhou2021trar,tian-etal-2023-dynamic] shows that in certain vision and language tasks, multi-modal reasoning often requires visual attention from different receptive fields...</p>
+                </div>
+                
+                <div class="subsubsection level-3">
+                    <h3 class="subsubsection-heading">Training Loss</h3>
+                    <p class="subsubsection-excerpt">During training, we aim for the LLM&amp;#x27;s output answer [C_o] to match our ground truth answer [C_a]. We use the cross-entropy loss between the embedding token [G] of the ground truth answer [C_a] an...</p>
+                </div>
+                
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Multi-modal Spatial-temporal Early Fusion</h2>
+                <p class="subsection-excerpt">Given the context [C] and the corresponding video [v], we first extract the text and visual embeddings like BLIP-2. Text embeddings [E_t R^K_T D] are derived from [C] using a Bert Tokenizer, where [D]...</p>
+            </div>
+            
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Multi-modal Query Temporal Reusing</h2>
+                <p class="subsection-excerpt">figure[!t] [width=0.5]figs/reuse.pdf Overview of Parameter Reuse: The temporal module is implemented by reusing the attention block parameters from the original Q-former, with small-parameter LoRA fin...</p>
+            </div>
+            
+                <div class="subsubsection level-3">
+                    <h3 class="subsubsection-heading">Channel Swapping</h3>
+                    <p class="subsubsection-excerpt">We employ an image-text Q-former for video representation and a frozen projection layer to align with LLM Tokens. For a batch [B] of data, we initially flatten [B] and [T] channels in queries, i.e., f...</p>
+                </div>
+                
+                <div class="subsubsection level-3">
+                    <h3 class="subsubsection-heading">LoRA Fine-tuning</h3>
+                    <p class="subsubsection-excerpt">To ensure that the new video representation is understandable by the frozen LLM, inspired by efficient fine-tuning techniques in NLP, we adopt a low-rank matrix adaptation (LoRA) approach for fine-tun...</p>
+                </div>
+                
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Dynamic Attention Routing (DAR)</h2>
+                <p class="subsection-excerpt">figure[!t] [width=0.5]figs/fig33.png {Overview of Dynamic Attention Routing: when using self-attention to fuse features between the text and the query, we apply masks [M] with different receptive fiel...</p>
+            </div>
+            </div>
+        <div class="section level-1">
+            <h1 class="section-heading">Experiments</h1>
+            <p class="section-excerpt">table*[t] Statistics about the three video intent analysis datasets used in our experiments. MUStARD is the 5-fold split and MUStARD* is the train-dev-test split for the same dataset. These datasets h...</p>
+        
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Datasets</h2>
+                <p class="subsection-excerpt">MUStARD[citation: castro-etal-2019-towards] The Multimodal Sarcasm Detection Dataset (MUStARD) stands as the sole available resource for sarcasm detection in conversational videos. Sourced from well-k...</p>
+            </div>
+            
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Experimental Setup</h2>
+                <p class="subsection-excerpt">table*[t] center {Performances on the video intent analysis datasets. Since the test sets are balanced, only binary classification accuracy is reported. Tunable.p represents tunable parameters. Models...</p>
+            </div>
+            
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Results, Discussion and Analysis</h2>
+                <p class="subsection-excerpt">In this section, we compare our MTransLLAMA model with various unimodal and multimodal baselines. Generalization to Out-of-pretraining Tasks In order to test the performance when the downstream task s...</p>
+            </div>
+            
+                <div class="subsubsection level-3">
+                    <h3 class="subsubsection-heading">Generalization to Out-of-pretraining Tasks</h3>
+                    <p class="subsubsection-excerpt">In order to test the performance when the downstream task significantly differs from the pretraining task, we conducted tests on intent analysis tasks. Although the scenarios in these datasets frequen...</p>
+                </div>
+                
+                <div class="subsubsection level-3">
+                    <h3 class="subsubsection-heading">Generalization to Out-of-pretraining Scenes</h3>
+                    <p class="subsubsection-excerpt">In order to test the performance when the scene of the downstream task significantly differs from the pretraining scene, we conducted tests on the qaEgo4d, CLEVRER-MC and youcook2 dataset. These datas...</p>
+                </div>
+                
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Ablation Study</h2>
+                <p class="subsection-excerpt">table[t] center Performances on the video question answering datasets are evaluated using accuracy (Acc), as well as METEOR (M) and ROUGE, two common text translation metrics, to represent the results...</p>
+            </div>
+            
+            <div class="subsection level-2">
+                <h2 class="subsection-heading">Case Study</h2>
+                <p class="subsection-excerpt">figure*[t] [width=]figs/figure4.pdf Case Study: The first clip is extracted from the MUStARD dataset, and the second clip is from the youcook2 dataset. We demonstrate the outputs of different LMMs. fi...</p>
+            </div>
+            </div>
+        <div class="section level-1">
+            <h1 class="section-heading">Conclusion</h1>
+            <p class="section-excerpt">Our model performs well when encountering scenes and tasks that were not seen during video pretraining. However, if the downstream task closely resembles the original pretraining dataset, such as CLEV...</p>
+        </div>
+    </div>
+</body>
+</html>

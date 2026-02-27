@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Structure: Interconnections - Efficient Transfer from Image-based Large Multimodal Models to Video Tasks</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            color: #eee;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: 1.4em; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 0.9em; }
+        
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 100px);
+        }
+        
+        .network-panel {
+            flex: 1;
+            padding: 20px;
+            position: relative;
+            overflow: auto;
+        }
+        
+        .network-svg {
+            width: 100%;
+            height: 600px;
+        }
+        
+        .detail-panel {
+            width: 380px;
+            background: #16213e;
+            padding: 20px;
+            border-left: 1px solid #333;
+            overflow-y: auto;
+            max-height: calc(100vh - 100px);
+        }
+        .detail-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .detail-content {
+            margin-top: 15px;
+        }
+        .detail-text {
+            background: #0f1629;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            line-height: 1.6;
+            font-size: 0.9em;
+        }
+        .node {
+            cursor: pointer;
+        }
+        .link {
+            stroke: #667eea;
+            stroke-opacity: 0.6;
+            stroke-width: 2;
+        }
+        .node-label {
+            font-size: 12px;
+            fill: #eee;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Efficient Transfer from Image-based Large Multimodal Models to Video Tasks</h1>
+        <p>Interactive Network Visualization - Click nodes to explore connections</p>
+    </div>
+    <div class="main-container">
+        <div class="network-panel">
+            <svg class="network-svg" id="network-svg"></svg>
+        </div>
+        <div class="detail-panel">
+            <div class="detail-title">Section Details</div>
+            <div class="detail-content" id="details">
+                <p style="color: #888;">Click on a node in the network to see details</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        const sections = [{"id": 0, "name": "Introduction", "text": "Benefiting from vast pre-trained corpora and parameters, large language models (LLMs) [citation: touvron2023llama,liu2023summary,touvron2023llama2] have demonstrated remarkable capabilities in general...", "level": 1}, {"id": 1, "name": "Related Work", "text": "Conversation and Speech Video Understanding The task of understanding dialogue and speeches in videos has always been a widely explored issue~[citation: han2021bi,liang2021multibench,zhang2021multi,41...", "level": 1}, {"id": 2, "name": "Conversation and Speech Video Understanding", "text": "The task of understanding dialogue and speeches in videos has always been a widely explored issue~[citation: han2021bi,liang2021multibench,zhang2021multi,4130374,10147343]. Most of the datasets~[citat...", "level": 2}, {"id": 3, "name": "Video Large Language Models", "text": "Large language models such as ChatGPT~[citation: liu2023summary] and LLAMA~[citation: touvron2023llama] have achieved tremendous success in the NLP field. Many works (like LLAVA~[citation: liu2023visu...", "level": 2}, {"id": 4, "name": "Temporal Modeling", "text": "With the advancement of AI, more attention is shifting from image to video understanding, including tasks like video question answering~[citation: li2022invariant,xiao2022video,10334011] and video act...", "level": 2}, {"id": 5, "name": "Methodology", "text": "In this section, we provide a detailed introduction to our proposed MTransLLAMA framework, which efficiently transfers the image-based LMM to handle video understanding tasks. It preserves the extensi...", "level": 1}, {"id": 6, "name": "Overview of MTransLLAMA", "text": "Given the context [C] (including dialogues, instructions, questions, etc.) and the corresponding video [v R^T 3 H W] comprising [T] frames sampled from the video sequence, each of size [H W], our prop...", "level": 2}, {"id": 7, "name": "Multi-modal Spatial-temporal Early Fusion", "text": "Traditional video-based LMMs usually adopt the following mechanism for question answering (QA), i.e., equation C_o = LLM(E_t, f_{{}}(E_v,q)), equation where [C_o] is the answer generated by LLM; [f_{{...", "level": 3}, {"id": 8, "name": "Multi-modal Query Temporal Reusing", "text": "For LLM-based video understanding methods~[citation: zhang2023video,maaz2023video] that deal with temporal information, a separately trained temporal modeling module is typically required. However, pr...", "level": 3}, {"id": 9, "name": "Dynamic Attention Routing", "text": "Existing research~[citation: zhou2021trar,tian-etal-2023-dynamic] shows that in certain vision and language tasks, multi-modal reasoning often requires visual attention from different receptive fields...", "level": 3}, {"id": 10, "name": "Training Loss", "text": "During training, we aim for the LLM&#x27;s output answer [C_o] to match our ground truth answer [C_a]. We use the cross-entropy loss between the embedding token [G] of the ground truth answer [C_a] an...", "level": 3}, {"id": 11, "name": "Channel Swapping", "text": "We employ an image-text Q-former for video representation and a frozen projection layer to align with LLM Tokens. For a batch [B] of data, we initially flatten [B] and [T] channels in queries, i.e., f...", "level": 3}, {"id": 12, "name": "LoRA Fine-tuning", "text": "To ensure that the new video representation is understandable by the frozen LLM, inspired by efficient fine-tuning techniques in NLP, we adopt a low-rank matrix adaptation (LoRA) approach for fine-tun...", "level": 3}, {"id": 13, "name": "Dynamic Attention Routing (DAR)", "text": "figure[!t] [width=0.5]figs/fig33.png {Overview of Dynamic Attention Routing: when using self-attention to fuse features between the text and the query, we apply masks [M] with different receptive fiel...", "level": 2}, {"id": 14, "name": "Experiments", "text": "table*[t] Statistics about the three video intent analysis datasets used in our experiments. MUStARD is the 5-fold split and MUStARD* is the train-dev-test split for the same dataset. These datasets h...", "level": 1}, {"id": 15, "name": "Datasets", "text": "MUStARD[citation: castro-etal-2019-towards] The Multimodal Sarcasm Detection Dataset (MUStARD) stands as the sole available resource for sarcasm detection in conversational videos. Sourced from well-k...", "level": 2}, {"id": 16, "name": "Experimental Setup", "text": "table*[t] center {Performances on the video intent analysis datasets. Since the test sets are balanced, only binary classification accuracy is reported. Tunable.p represents tunable parameters. Models...", "level": 2}, {"id": 17, "name": "Results, Discussion and Analysis", "text": "In this section, we compare our MTransLLAMA model with various unimodal and multimodal baselines. Generalization to Out-of-pretraining Tasks In order to test the performance when the downstream task s...", "level": 2}, {"id": 18, "name": "Generalization to Out-of-pretraining Tasks", "text": "In order to test the performance when the downstream task significantly differs from the pretraining task, we conducted tests on intent analysis tasks. Although the scenarios in these datasets frequen...", "level": 3}, {"id": 19, "name": "Generalization to Out-of-pretraining Scenes", "text": "In order to test the performance when the scene of the downstream task significantly differs from the pretraining scene, we conducted tests on the qaEgo4d, CLEVRER-MC and youcook2 dataset. These datas...", "level": 3}, {"id": 20, "name": "Ablation Study", "text": "table[t] center Performances on the video question answering datasets are evaluated using accuracy (Acc), as well as METEOR (M) and ROUGE, two common text translation metrics, to represent the results...", "level": 2}, {"id": 21, "name": "Case Study", "text": "figure*[t] [width=]figs/figure4.pdf Case Study: The first clip is extracted from the MUStARD dataset, and the second clip is from the youcook2 dataset. We demonstrate the outputs of different LMMs. fi...", "level": 2}, {"id": 22, "name": "Conclusion", "text": "Our model performs well when encountering scenes and tasks that were not seen during video pretraining. However, if the downstream task closely resembles the original pretraining dataset, such as CLEV...", "level": 1}];
+        const connections = [{"source": "Introduction", "target": "Related Work", "type": "sequential"}, {"source": "Introduction", "target": "Methodology", "type": "semantic"}, {"source": "Related Work", "target": "Methodology", "type": "sequential"}, {"source": "Related Work", "target": "Conversation and Speech Video Understanding", "type": "hierarchical"}, {"source": "Related Work", "target": "Video Large Language Models", "type": "hierarchical"}, {"source": "Related Work", "target": "Temporal Modeling", "type": "hierarchical"}, {"source": "Related Work", "target": "Introduction", "type": "semantic"}, {"source": "Related Work", "target": "Methodology", "type": "semantic"}, {"source": "Methodology", "target": "Experiments", "type": "sequential"}, {"source": "Methodology", "target": "Overview of MTransLLAMA", "type": "hierarchical"}, {"source": "Overview of MTransLLAMA", "target": "Multi-modal Spatial-temporal Early Fusion", "type": "hierarchical"}, {"source": "Overview of MTransLLAMA", "target": "Multi-modal Query Temporal Reusing", "type": "hierarchical"}, {"source": "Overview of MTransLLAMA", "target": "Dynamic Attention Routing", "type": "hierarchical"}, {"source": "Overview of MTransLLAMA", "target": "Training Loss", "type": "hierarchical"}, {"source": "Methodology", "target": "Multi-modal Spatial-temporal Early Fusion", "type": "hierarchical"}, {"source": "Methodology", "target": "Multi-modal Query Temporal Reusing", "type": "hierarchical"}, {"source": "Multi-modal Query Temporal Reusing", "target": "Channel Swapping", "type": "hierarchical"}, {"source": "Multi-modal Query Temporal Reusing", "target": "LoRA Fine-tuning", "type": "hierarchical"}, {"source": "Methodology", "target": "Dynamic Attention Routing (DAR)", "type": "hierarchical"}, {"source": "Methodology", "target": "Experiments", "type": "semantic"}, {"source": "Experiments", "target": "Conclusion", "type": "sequential"}, {"source": "Experiments", "target": "Datasets", "type": "hierarchical"}, {"source": "Experiments", "target": "Experimental Setup", "type": "hierarchical"}, {"source": "Experiments", "target": "Results, Discussion and Analysis", "type": "hierarchical"}, {"source": "Results, Discussion and Analysis", "target": "Generalization to Out-of-pretraining Tasks", "type": "hierarchical"}, {"source": "Results, Discussion and Analysis", "target": "Generalization to Out-of-pretraining Scenes", "type": "hierarchical"}, {"source": "Experiments", "target": "Ablation Study", "type": "hierarchical"}, {"source": "Experiments", "target": "Case Study", "type": "hierarchical"}, {"source": "Experiments", "target": "Conclusion", "type": "semantic"}];
+        
+        const width = document.querySelector('.network-panel').clientWidth;
+        const height = 600;
+        
+        const svg = d3.select("#network-svg")
+            .attr("width", width)
+            .attr("height", height);
+        
+        // Create force simulation
+        const simulation = d3.forceSimulation(sections)
+            .force("link", d3.forceLink(connections).id(d => d.name || d.id))
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(d => 15 + (d.level || 1) * 3));
+        
+        // Create links
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(connections)
+            .enter().append("line")
+            .attr("class", "link")
+            .attr("stroke-width", d => {
+                if (d.type === "hierarchical") return 3;
+                if (d.type === "sequential") return 2.5;
+                if (d.type === "semantic") return 2;
+                return 1.5;
+            })
+            .attr("stroke", d => {
+                if (d.type === "hierarchical") return "#48bb78";
+                if (d.type === "sequential") return "#667eea";
+                if (d.type === "semantic") return "#ed8936";
+                return "#667eea";
+            });
+        
+        // Create nodes
+        const node = svg.append("g")
+            .selectAll("circle")
+            .data(sections)
+            .enter().append("circle")
+            .attr("class", "node")
+            .attr("r", d => 8 + d.level * 2)
+            .attr("fill", d => {
+                const colors = ["#667eea", "#48bb78", "#ed8936", "#f56565"];
+                return colors[d.level - 1] || "#667eea";
+            })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
+            .on("click", function(event, d) {
+                showDetails(d);
+            });
+        
+        // Add labels
+        const label = svg.append("g")
+            .selectAll("text")
+            .data(sections)
+            .enter().append("text")
+            .attr("class", "node-label")
+            .text(d => d.name)
+            .attr("dx", 12)
+            .attr("dy", 4);
+        
+        // Update positions on simulation tick
+        simulation.on("tick", () => {
+            if (connections.length > 0) {
+                link
+                    .attr("x1", d => d.source.x || d.source)
+                    .attr("y1", d => d.source.y || d.source)
+                    .attr("x2", d => d.target.x || d.target)
+                    .attr("y2", d => d.target.y || d.target);
+            }
+            
+            node
+                .attr("cx", d => d.x || width / 2)
+                .attr("cy", d => d.y || height / 2);
+            
+            label
+                .attr("x", d => (d.x || width / 2) + 12)
+                .attr("y", d => (d.y || height / 2) + 4);
+        });
+        
+        // If no connections, arrange nodes in a circle
+        if (connections.length === 0) {
+            const angleStep = (2 * Math.PI) / sections.length;
+            sections.forEach((d, i) => {
+                const angle = i * angleStep;
+                d.x = width / 2 + Math.cos(angle) * (width / 3);
+                d.y = height / 2 + Math.sin(angle) * (height / 3);
+                d.fx = d.x;
+                d.fy = d.y;
+            });
+            simulation.alpha(0).restart();
+        }
+        
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+        
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+        
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+        
+        function showDetails(d) {
+            const detailsDiv = document.getElementById("details");
+            const relatedConnections = connections.filter(c => {
+                const sourceName = typeof c.source === "object" ? c.source.name : c.source;
+                const targetName = typeof c.target === "object" ? c.target.name : c.target;
+                return sourceName === d.name || targetName === d.name;
+            });
+            
+            let html = `
+                <h3 style="color: #667eea; margin-bottom: 10px;">${d.name}</h3>
+                <p style="color: #aaa; font-size: 0.85em; margin-bottom: 15px;">Level ${d.level} Section</p>
+                <div class="detail-text">
+                    <strong>Text Excerpt:</strong><br>
+                    ${d.text || "No text excerpt available"}
+                </div>
+            `;
+            
+            if (relatedConnections.length > 0) {
+                html += `<div style="margin-top: 15px;">
+                    <strong style="color: #667eea;">Connections (${relatedConnections.length}):</strong>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                `;
+                relatedConnections.forEach(conn => {
+                    const sourceName = typeof conn.source === "object" ? conn.source.name : conn.source;
+                    const targetName = typeof conn.target === "object" ? conn.target.name : conn.target;
+                    const other = sourceName === d.name ? targetName : sourceName;
+                    html += `<li style="margin: 5px 0; color: #ccc;">${conn.type}: ${other}</li>`;
+                });
+                html += `</ul></div>`;
+            }
+            
+            detailsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

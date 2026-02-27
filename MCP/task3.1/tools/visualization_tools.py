@@ -159,17 +159,32 @@ def generate_interconnected_content(structure: Dict, connections: Dict, template
     # Escape title for HTML
     title = html_module.escape(str(title))
     
-    # Build sections data for JavaScript (escape for JSON)
-    sections_data_list = []
-    for i, section in enumerate(sections):
-        sections_data_list.append({
-            "id": i,
-            "name": str(section.get("heading", "")),
-            "text": str(section.get("text_excerpt", "")),
-            "level": section.get("level", 1)
-        })
+    # Build nodes for JavaScript (include sections + subsections + subsubsections)
+    nodes: list[dict] = []
+    seen_names: set[str] = set()
+
+    def add_node(name: str, text: str, level: int) -> None:
+        node_name = str(name or "").strip()
+        if not node_name or node_name in seen_names:
+            return
+        seen_names.add(node_name)
+        nodes.append(
+            {
+                "id": len(nodes),
+                "name": node_name,
+                "text": str(text or ""),
+                "level": int(level or 1),
+            }
+        )
+
+    for section in sections:
+        add_node(section.get("heading", ""), section.get("text_excerpt", ""), section.get("level", 1))
+        for subsection in section.get("subsections", []):
+            add_node(subsection.get("heading", ""), subsection.get("text_excerpt", ""), subsection.get("level", 2))
+            for subsub in subsection.get("subsubsections", []):
+                add_node(subsub.get("heading", ""), subsub.get("text_excerpt", ""), subsub.get("level", 3))
     
-    sections_data = json.dumps(sections_data_list, ensure_ascii=False)
+    sections_data = json.dumps(nodes, ensure_ascii=False)
     
     # Build connections data for JavaScript
     connections_data_list = []
