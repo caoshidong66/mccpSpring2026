@@ -1,0 +1,300 @@
+
+\section{Experiments}
+
+\begin{table*}[t]
+\centering
+\caption{Statistics about the three video intent analysis datasets used in our experiments. \textbf{MUStARD} is the 5-fold split and \textbf{MUStARD*} is the train-dev-test split for the same dataset. These datasets have significant domain differences compared to the traditional training data of video-based LMMs.}
+\resizebox{0.95\textwidth}{!}
+{
+\begin{tabular}{c | c | c c c | c c c | c c c}
+\toprule
+Dataset & \#Samples & \multicolumn{3}{c|}{Train} & \multicolumn{3}{c|}{Dev} & \multicolumn{3}{c}{Test}\\
+& & \# Pos & \# Neg & Total & \# Pos & \# Neg & Total & \# Pos & \# Neg & Total \\
+\midrule
+
+\textbf{MUStARD} & 690 & 276 & 276 & 552 & 0 & 0 & 0 & 69 & 69 & 138 \\ 
+\textbf{MUStARD$*$} & 690 & 207 & 207 & 414 & 69 & 69 & 138 & 69 & 69 & 138  \\
+\textbf{UR-Funnyv2} & 7614 & 3810 & 3804 & 7614 & 494 & 486 & 980 & 490 & 504 & 994 \\ 
+\bottomrule
+\end{tabular}
+}
+% \vspace{-0.3cm}
+\label{tab:dataset}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{Statistics about the three datasets for out-of-pretraining scenes. These datasets exhibit significant scene differences compared to the traditional training data of video-based LMMs. \textbf{CLEVRER-MC} and \textbf{youcook2} only has a train/test split, and the Moving Direction task is a zero-shot task annotated by MVBench.}
+\resizebox{0.95\textwidth}{!}
+{
+\begin{tabular}{c | c c | c c | c c}
+\toprule
+Dataset & \multicolumn{2}{c|}{Train} & \multicolumn{2}{c|}{Dev} & \multicolumn{2}{c}{Test}\\
+& \# Videos & \# Questions  & \# Videos & \# Questions & \# Videos & \# Questions   \\
+\midrule
+
+\textbf{qaEgo4d}   & 997 &10746 & 162 & 1913 & 166 & 1854 \\ 
+\textbf{youcook2} &1333  & 10337 & 0 & 0 & 457& 3492  \\
+\textbf{CLEVRER-MC}  & 10000 & 149660 & 0 & 0 & 800 & 800 \\ 
+\bottomrule
+\end{tabular}
+}
+% \vspace{-0.3cm}
+\label{tab:dataset2}
+\end{table*}
+
+
+In this section, we describe our experimental setup and present the results of our experiments. To validate the effectiveness of our rapid transfer method, we conducted experiments on multiple datasets. These include video intent analysis datasets and traditional VQA datasets. 
+
+
+The video intent analysis task, aimed at detecting the emotional intent of speakers, differs from the existing tasks of video-based LMMs. It requires attention to the speaker's emotions, a requirement that significantly deviates from video-based LMM's video pre-training tasks. We demonstrate quantitative results using the Video Sarcasm Detection Dataset MUStARD~\cite{castro-etal-2019-towards} and the Video Humor Detection Dataset UR-Funnyv2~\cite{hasan2019ur}. These datasets encompass tasks across various conversational video scenarios, each sample consisting of a video segment and its corresponding dialogue. Our experiments on these datasets effectively showcase the capability of our method in analyzing dialogue intent in datasets with significant domain differences.
+
+The VQA dataset is commonly used in video-based LMMs for instruction fine-tuning. To measure our method's transferability to unknown downstream VQA tasks, we fine-tuned it solely on the CLEVRER-MC\cite{yi2019clevrer} dataset and selected four diverse tasks from MVBench \cite{li2023mvbench} for testing: Object Existence, Moving Direction, Moving Count, Moving Attribute. These tasks are complex temporal analysis challenges that cannot be solved by examining just a few frames of an image. Similarly, we conducted experiments on the qaEgo4d\cite{barmann2022did} and youcook2\cite{zhou2018towards} datasets. Although these QA tasks are relatively common, the scenarios differ significantly from those in traditional video pre-training datasets. 
+
+
+
+\subsection{Datasets}
+
+ \paragraph{MUStARD\cite{castro-etal-2019-towards}} The Multimodal Sarcasm Detection Dataset (MUStARD) stands as the sole available resource for sarcasm detection in conversational videos. Sourced from well-known TV shows such as Friends and The Big Bang Theory, MUStARD comprises audiovisual utterances annotated with sarcasm labels. Each target utterance is linked to historical dialogues, providing essential context for comprehending sarcastic remarks. We conducted experiments on two commonly used partitioning schemes, including the original 5-fold partition and the train-dev-test partition. We labeled the dataset using the train-dev-test partition as MUStARD*. 
+
+\paragraph{UR-Funnyv2\cite{hasan2019ur}} For multimodal humor detection, we employ the UR-Funnyv2 dataset, gathered from TED talk videos and featuring three modalities. Like MUStARD, this dataset includes context preceding the target punchline. Additionally, we generate a reduced version of UR-Funnyv2 by truncating its training set. Detailed split statistics for these video intent analysis datasets are provided in Table~\ref{tab:dataset}.
+
+
+
+\paragraph{CLEVRER-MC\cite{yi2019clevrer}} The CLEVRER dataset is designed for evaluating computer vision and language understanding systems on dynamic scene understanding and causal reasoning. Unlike the original CLEVR dataset, CLEVRER focuses on video understanding, featuring synthetic video scenes with various physical interactions, such as object collisions and movements. 
+
+\paragraph{MVBench\cite{li2023mvbench}}  MVBench is a standardized benchmark for testing large video models, comprising 20 tasks that are highly relevant to temporal reasoning, such as Reasoning, Direction, Recognition, and more. It provides a standardized measure to test the temporal understanding capabilities of VideoLMM. In this context, we selected four of these tasks for testing.
+
+\paragraph{qaEgo4d\cite{barmann2022did}} qaEgo4d is a video question-answering dataset focused on egocentric (first-person) video footage. It is part of the larger Ego4D dataset, which contains extensive video recordings captured from the wearer's perspective, offering a unique viewpoint that emphasizes the individual's interactions with their environment. More details are shown in Table~\ref{tab:dataset2}.
+
+\paragraph{youcook2\cite{zhou2018towards} }youcook2 is the largest task-oriented, instructional video dataset in the vision community. It contains 2000 long untrimmed videos from 89 cooking recipes; on average, each distinct recipe has 22 videos. The procedure steps for each video are annotated with temporal boundaries and described by imperative English sentences. The videos were downloaded from YouTube and are all in the third-person viewpoint.
+
+\subsection{Experimental Setup}
+\begin{table*}[t]
+\begin{center}
+\caption{Performances on the video intent analysis datasets. Since the test sets are balanced, only binary classification accuracy is reported. Tunable.p represents tunable parameters. Models and digits with $*$ denotes results from reproductions conducted by the authors. Extra data refers to whether additional annotations were made to the dataset for training. In the Modality column, T, V, and A represent Text, Video, and Audio, respectively, "Tunable.p" represents the number of parameters trained during instruction tuning. Black and blue highlighting indicate the best and second-best performance, respectively.}
+\resizebox{0.95\textwidth}{!}{
+\begin{tabular}{l|c|c|c|c|c|c}
+         \toprule
+         Dataset & Modality & UR-Funnyv2 & MUStARD & MUStARD* &Extra Data &Tunable.p\\
+         \midrule
+         \multicolumn{7}{c}{Unimodal Methods}\\
+         \midrule
+         Timesfomer~\cite{liu2018efficient}&V&56.2&54.3&56.5&\ding{55}&125M\\
+         SVM+Bert~\cite{devlin2018bert}&T&58.9&66.2&65.3&\ding{55}&400M\\
+         EfficientNet~\cite{tan2019efficientnet}&V&55.4&55.0&55.7&\ding{55}&10M\\
+         
+         \midrule
+         \multicolumn{7}{c}{Sarcasm and Humor Detection Methods}\\
+         \midrule
+         MSEA~\cite{chauhan2020sentiment}&V+T&---&71.7&---&\ding{51}&2M\\
+         MUStARD++~\cite{ray2022multimodal}&V+A+T&---&71.7&---&\ding{51}&2.5M\\
+         {MIL}$^*$~\cite{zhang2023learning}&V+A+T&---&71.2&71.7&\ding{55}&4M\\
+         MuLOT$^*$~\cite{pramanick2022multimodal}&V+A+T&---&70.5 & 71.1  &\ding{55}&5M\\
+         
+         
+         \midrule
+         \multicolumn{7}{c}{Multi-Modal Fusion Methods}\\
+         \midrule
+         LMF~\cite{liu2018efficient} & V+A+T & 65.2 & 62.4*& 63.9&\ding{55} &1.5M\\
+         MULT~\cite{tsai2019multimodal} & V+A+T & 60.9 & 64.6*& 63.2 &\ding{55} & 4.5M\\
+         AGM~\cite{li2023boosting} & V+A+T & 65.0 & --- &---& \ding{55}&10M\\
+         SimMMDG~\cite{dong2023simmmdg} & V+A+T& 65.6&68.9* & 72.5&\ding{55} &25M\\
+         I2MCL~\cite{zhou2023intra} &V+A+T& 65.1& 64.3* & 65.2 &\ding{55} &40M\\
+         \midrule
+         \multicolumn{7}{c}{LLM + Zero-shot}\\
+         \midrule
+         {VideoLLAMA~\cite{zhang2023video}}$^*$ & V+A+T&40.1&44.2&35.6&\ding{51}&--\\
+         {VideoChat~\cite{maaz2023video}}$^*$ &V+A+T&42.1&37.4&37.7&\ding{51}&--\\
+         LLaVA-Video\cite{zhang2024video}&V+T&57.5&54.3&50.7&\ding{51}&--\\
+         VideoLLAMA2~\cite{cheng2024videollama}&V+A+T&58.0&52.1&53.0&\ding{51}&--\\
+         InternVL2~\cite{chen2024internvl}&V+T&52.1&55.7&52.1&\ding{51}&--\\
+         \midrule
+         \multicolumn{7}{c}{LLM + Fine-Tuning}\\
+         \midrule
+         {VideoLLAMA~\cite{zhang2023video}} & V+A+T&66.7&70.5&69.6&\ding{51}&0.5B\\
+         {VideoChat~\cite{maaz2023video}} &V+A+T&66.3&71.1&71.1&\ding{51}&0.5B\\
+        VideoLLAMA2~\cite{cheng2024videollama}&V+A+T&67.1&71.5&71.1&\ding{51}&0.7B\\
+         InternVL2~\cite{chen2024internvl}&V+T&67.7&72.7&72.5&\ding{51}&0.8B\\
+         \midrule
+         MTransLLAMA~(Ours) & V+T & \textcolor{cyan}{68.2} & \textcolor{cyan}{73.9}&\textbf{74.6}&\ding{55}&2.5M \\
+         MTransLLAMA~(Ours)  & V+A+T & \textbf{68.3} & \textbf{74.6}&\textcolor{cyan}{73.3}&\ding{55}&2.5M \\
+         \bottomrule
+\end{tabular}
+}
+\label{table:res}
+\end{center}
+\end{table*}
+
+We conduct all experiments using a Frozen Vicuna-7B model~\cite{touvron2023llama} and a Q-former model~\cite{li2023blip} pre-trained on image-text datasets. In all experiments, we integrate LoRA into both the query and value projection layer in each attention module of the Q-former. Only the parameters of LoRA are trained while Queries and the LLM are frozen.
+
+We train our model using the Pytorch framework on Nvidia-A40, with 48 GB dedicated memory in each GPU. Similar to BLIP-2, during our data processing stage, we used ViT and BERT to extract image and text features, respectively. Throughout the training process, we kept the parameters of the feature extraction models frozen. We use pre-trained Q-former feature extraction models and fine-tune them with LoRA during training. All other weights are frozen.
+
+We train our model using the AdamW~\cite{loshchilov2017decoupled} optimizer with learning rate = 0.0001, betas = (0.9, 0.95), weight decay = 0.05.  For Dataset UR-Funnyv2, qaEgo4d, CLEVRER-MC and youcook2. We train our model with hyper-parameter batchsize = 2, window size = 4, epoch = 25. The hyper-parameter on MUStARD and MUStARD* dataset is batchsize = 4, windows size = 8, epoch = 90.
+
+
+\subsection{Results, Discussion and Analysis}
+In this section, we compare our MTransLLAMA model with various unimodal and multimodal baselines. 
+
+
+\subsubsection{Generalization to Out-of-pretraining Tasks}
+
+In order to test the performance when the downstream task significantly differs from the pretraining task, we conducted tests on intent analysis tasks. Although the scenarios in these datasets frequently appear in the pretraining data, they are often pre-trained using video captioning tasks, which differ significantly from the intent analysis. Intent analysis requires more attention to changes in facial expressions and the integration of textual information. 
+
+The tests include three datasets, UR-Funnyv2, MUStARD, and MUStARD*. We compare our model with state-of-the-art (SOTA) methods, including models designed specifically for sarcasm and humor detection \textbf{MuLOT} ~\cite{pramanick2022multimodal} and \textbf{MIL} ~\cite{zhang2023learning}, models focusing on multimodal information fusion \textbf{AGM}~\cite{li2023boosting}, \textbf{SimMMDG}~\cite{dong2023simmmdg}, \textbf{I2MCL}~\cite{zhou2023intra}, and existing state-of-the-art video understanding models based on large language models \textbf{VideoLLAMA} ~\cite{zhang2023video},\textbf{VideoChat}~\cite{maaz2023video}, \textbf{VideoLLAMA2} ~\cite{cheng2024videollama},\textbf{VideoChat2}~\cite{li2023mvbench}, \textbf{LLaVA-Video} ~\cite{zhang2024video} and \textbf{InternVL2}~\cite{chen2024internvl}, 
+
+
+Since the test sets of MUStARD and UR-Funnyv2 are balanced, we use binary accuracy as the evaluation metric. The results are shown in Table~\ref{table:res}. Based on the results, we have the following observations. MTransLLAMA is clearly superior to single-modal methods. Benefiting from the complementary information of multimodal data, MTransLLAMA improves 19.6\% and 7.7\% on accuracy compared with visual and textual methods, respectively, on MUStARD. For Humor Detection, MTransLLAMA achieved a 9.8\% lead over unimodal methods. On the one hand, compared with only using the data of video modality, it is relatively more effective in detecting the intent expressed in the highly semantic text. On the other hand, as an important unit of expressing intent, videos can significantly improve the performance of MTransLLAMA.
+
+In contrast to other multi-modal methods that utilize all three modalities of text, video, and audio, our MTransLLAMA approach specifically focuses on the text and video modalities and keeps the audio branch frozen. MTransLLAMA achieves 2.1\%, 2.1\%, and 1.6\% improvements in the accuracy of sarcasm detection and humor detection on UR-Funny2, MUStARD, and MUStARD*. This result demonstrates that MTransLLAMA is particularly adept at recognizing intent data. 
+
+In comparison to other large language model-based methods, our MTransLLAMA approach demonstrates significant improvements in the same LoRA fine-tuning scenarios. Additionally, in terms of training costs, our model does not specifically model temporal modules, saving a considerable amount of video pre-training resources. Specifically, we achieve enhancements of  1.2\%, and 2.1\% without employing video pre-training on MUStARD. These results clearly indicate the effectiveness of our method compared to the state-of-the-art methods.  
+
+
+\subsubsection{Generalization to Out-of-pretraining Scenes}
+In order to test the performance when the scene of the downstream task significantly differs from the pretraining scene, we conducted tests on the qaEgo4d, CLEVRER-MC and youcook2 dataset. These datasets feature first-person perspectives or rare scenarios, which differ significantly from the scenes in the video pretraining datasets.
+\begin{table}[t]
+\begin{center}
+\caption{Accuracy on the CLEVRER-MC Dataset. MD, MC, MA, OE represents "Moving Direction", "Moving Count", "Moving Attribute" and "Object Existence", respectively. Best performance is highlighted in bold.}
+\resizebox{0.475\textwidth}{!}{
+\begin{tabular}{l|c|c|c|c}
+    \toprule
+    Tasks &  MD & MC & MA & OE \\ 
+     \toprule
+
+    VideoLLAMA & 22.5 &22.5&32.5 &48.0 \\
+    VideoChat    & 25.5 &20.5&42.5&53.0\\
+    VideoChat2    & 23.0 &42.0&58.5&58.0\\
+    VideoLLAMA2&35.0&46.0&55.0&53.5\\
+    LLaVA-Video&41.5&44.5&79.0&61.0\\
+    InternVL2 &\textbf{56.0}&\textbf{86.5}&\textbf{89.5}&\textbf{95.5}\\
+    MTransLLAMA~(Ours)        & 26.5 & 46.0&40.0 &53.0 \\
+    \bottomrule
+\end{tabular}
+}
+\label{table:Clr}
+\end{center}
+\end{table}
+
+To facilitate fair comparison and understanding, we employ MVBench \cite{li2023mvbench} for testing on CLEVRER-MC. This approach involves converting the generated answers into multiple-choice format, thereby enabling objective evaluation. This method allows for quantifiable comparisons and mitigates the subjectivity often associated with open-ended answers, ensuring a more standardized assessment of the VQA model's performance. We evaluated performance on the qaEgo4d and youcook2 datasets using accuracy, ROUGE, and METEOR metrics. We compare our model with state-of-the-art
+(SOTA) methods, including models designed specifically for VQA and video understanding models based on large language models.
+
+We tested our model on four tasks in CLEVRER-MC. As shown in Table~\ref{table:Clr}, The results show that InternVL achieves strong performance on the CLEVRER-MC dataset, and newer models like LLaVA-Video and VideoLLaMA also demonstrate impressive results. However, without the use of video pre-training, and by utilizing only 1\% of the training video dataset and 0.5\% of trainable parameters, our model achieves performance on par with VideoLLaMA2 on the "MA" (Moving Attribute) and "OE" (Object Existence) tasks, while demonstrating performance similar to or exceeding that of VideoChat2 and VideoLLaMA on the "MD" (Moving Direction) and "MC" (Moving Count) tasks. Despite other LLM-based methods, except for VideoLLaMA, not keeping the LLM frozen during training and instead fine-tuning the LLM using LoRA—which resulted in improved performance—our model still maintains significantly lower costs.
+
+As shown in Table~\ref{table:Ego}, on both the qaEgo4d and youcook2 datasets, our model achieved state-of-the-art performance. Compared to traditional VQA methods, our model's accuracy on the qaEgo4d dataset is not as high as HCRN. However, this is because HCRN is a non-generative approach that requires a predefined answer dictionary and utilizes a greater number of video frames. Moreover, our method ranks just below the state-of-the-art InternVL2 among LLM-based methods.
+
+As shown in Table~\ref{table:efficiency}, we also compare our method with different video-based LMMs. In terms of efficiency, the main advantage of our approach is the savings during the Video Pretraining phase, which requires a large amount of video data, such as WebVid-2M, and consumes resources nearly a hundred times more than the subsequent fine-tuning phase. Moreover, as the frame number increases, our model has lower memory usage and algorithmic complexity compared to other models. Additionally, our model has the fewest tunable parameters, and by freezing the projection layer and the large language model, it becomes easier to train and fine-tune.
+
+\subsection{Ablation Study}
+\begin{table}[t]
+\begin{center}
+\caption{Performances on the video question answering datasets are evaluated using accuracy (Acc), as well as METEOR (M) and ROUGE, two common text translation metrics, to represent the results. * represents non-generative question answering. Best performance is highlighted in bold.}
+\resizebox{0.475\textwidth}{!}{
+\begin{tabular}{l|c|c|c|c|c}
+    \toprule
+    Dataset &  \multicolumn{3}{c|}{qaEgo4d} & \multicolumn{2}{c}{youcook2}\\
+    Model   & Acc & M & ROUGE &  M & ROUGE \\
+     \toprule
+         \multicolumn{6}{c}{Video Understanding Methods}\\
+    \midrule
+    \multicolumn{6}{c}{\gray{\textit{\textbf{All models take \textbf{16} frames as input.}}}} \\
+    SimpleVQA & 9.7&18.3&27.7&---&---\\
+    HCRN$*$\cite{le2021hierarchical} & 10.3 &17.2&25.7&--- &--- \\
+    JustAsk$*$\cite{yang2021just}    & 9.6 &17.8&26.7&--- &---\\
+    Longformer\cite{beltagy2020longformer}    & 6.7 &16.9&24.4&---&--- \\
+    VideoBert\cite{sun2019videobert}&---&---&---&12.0&28.8\\
+    AT+Video\cite{hessel2019case} &---&---&---&17.8&36.5\\
+
+    \midrule
+        \multicolumn{6}{c}{\gray{\textit{\textbf{All models take \textbf{4} frames as input.}}}} \\
+    VideoChat2    & 1.6 &15.5&13.5&18.0 &34.2\\
+    
+    VideoLLAMA2&1.9&15.1&12.9&17.9&35.5\\
+    InternVL2&\textbf{10.7}&18.7&\textbf{29.2}&17.7&35.1\\
+
+    LLaVA-Video&2.3&15.7&13.1&17.2&36.1\\
+    MTransLLAMA~(Ours)       & 10.1 & \textbf{18.9}&28.1  & \textbf{18.2} &\textbf{38.6}\\
+    \bottomrule
+\end{tabular}
+}
+\label{table:Ego}
+\end{center}
+\end{table}
+
+
+\begin{table}[t]
+\begin{center}
+\caption{
+Comparison in parameters and time efficiency between our method and other video-based LMMs. The abbreviations "V.P" (video pretraining), "Complexity" (algorithm complexity), "\#T.P" (number of tunable parameters), "F.LLM" (frozen LLM), "F.Proj" (frozen projection layer), and "\#V.T" (number of visual tokens ) represent the corresponding characteristics, respectively. The parameters $f$ and $s$ represent the number of frames and the number of tokens per frame, respectively. In the "\#V.T" section, for other methods, the number of visual tokens input to the LLM increases linearly with the number of frames $f$, and the number of tokens per single frame $s$ is generally greater than or equal to 32. }
+\resizebox{0.475\textwidth}{!}{
+\begin{tabular}{l|c|c|c|c|c|c|c}
+    \toprule
+    Method &V.P& Complexity & \#T.P & F.LLM  &F.Proj &\#V.T \\
+    \toprule
+    VideoLLAMA & \ding{51} & $s^2f^2$ & 1B &\ding{51}&\ding{55}&$sf$\\
+    VideoLLAMA2 & \ding{51}  & $s^2f^2$ & 7B&\ding{55} &\ding{55}&$sf$\\
+    VideoChat & \ding{51} & $s^2f^2$ & 196M&\ding{51} & \ding{55} & $sf$\\
+    VideoChat2 & \ding{51}  & $s^2f^2$ & 7B &\ding{55}&\ding{55}&$sf$ \\
+    InternVL2 & \ding{51}  & $s^2f^2$ & 8B&\ding{55}&\ding{55}&$sf$ \\
+    LLaVA-Video&\ding{55}&$s^2f^2$&7B&\ding{55}&\ding{55}&$sf$\\
+Ours & \ding{55}  & $s^2+f^2$ & 2.5M&\ding{51}&\ding{51} &32\\
+    
+
+    
+    \bottomrule
+\end{tabular}
+}
+\label{table:efficiency}
+\end{center}
+\end{table}
+
+
+\begin{table}[t]
+\begin{center}
+\caption{Ablation Study on the MUStARD and qaEgo4d datasets. To better observe the impact of the proposed method on the results, we conducted experiments on text and visual modalities. Experiments show our method is beneficial to the results. Best performance is highlighted in bold.}
+\resizebox{0.475\textwidth}{!}{
+\begin{tabular}{l|c|c|c|c|c|c}
+    \toprule
+    Dataset &  \multicolumn{3}{c|}{UR-Funnyv2} & \multicolumn{3}{c}{qaEgo4d}\\
+    Model   & Acc & Recall & Prec & Acc & METEOR & ROUGE\\
+     \toprule
+    
+    w/o. Fusion & 63.4 &62.6&64.2&10.0 &18.7 &27.8\\
+    w/o. DAR    & 67.4 &64.6&69.1&9.8&18.5&27.5\\
+    w/o. MQT    & 58.3 &53.9&59.9&9.0 &17.5&25.8\\
+    MTransLLAMA~(Ours)       & \textbf{68.2} & \textbf{64.8}&\textbf{70.2} &\textbf{10.1} &\textbf{18.9}&\textbf{28.1}\\
+    \bottomrule
+\end{tabular}
+}
+\label{table:Ablation}
+\end{center}
+\end{table}
+
+
+
+To probe the effectiveness of each component in MTransLLAMA, we conduct ablation experiments. All the experiments are implemented by Q-former and LLAMA-7B. 
+
+Our goal is to add a few tunable parameters to the frozen space-only model and close the gap to the video pre-trained model. To validate the effectiveness of Multimodal Query Temporal Reusing (MQT), we conducted experiments by removing the MQT module and only using the spatial information extractor to concatenate frames of images. As shown in Table~\ref{table:Ablation}, the performance of the frozen space-only model rapidly declined, despite using more tokens and spending more time in this setting. This indicates that our temporal adaptation introduces strong temporal modeling to the space-only model. These results successfully validate the effectiveness of our proposed MQT module.
+
+We also evaluate UniFusion and DAR in Table~\ref{table:Ablation}. To measure the effectiveness of UniFusion, we controlled the input modalities to observe the impact on performance. Our experiments included dual-modal training with and without early modality fusion using UniFusion. Compared to other fusion methods, our UniFusion system performed the best, highlighting the importance of early modality interaction for information exchange. Early fusion refers to our approach of inputting textual information into the Q-former for modality fusion. Compared to previous methods that align vision to text, this approach extracts features more effectively and significantly reduces the token usage of the LLM, making it highly efficient in conserving computational resources. Our early fusion method shows a noticeable improvement in UrFunnyv2, a humor detection dataset, where enhanced text analysis is crucial. It also performs well in qaEgo4d, where it better integrates instructions with key visual regions. 
+
+
+%To analyze the sensitivity of the model, we conducted experiments on several crucial parameters. The size of the historical window determines the importance of temporal information. Through experiments with different sizes of historical windows, we observed that enhancing the model's performance is achievable by increasing the historical context, both in terms of visual and textual information. Furthermore, we analyzed the input forms of the multimodal token and the LLM. These forms include the current token, token concatenation, and token averaging. Our findings indicate that the effectiveness is higher when considering the current token, allowing the model to focus on information from the current moment.
+
+\subsection{Case Study}
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figs/figure4.pdf}
+  \caption{Case Study: The first clip is extracted from the MUStARD dataset, and the second clip is from the youcook2 dataset. We demonstrate the outputs of different LMMs.}
+  \label{fig:visual}
+\end{figure*}
+
+We conducted case studies on the performance of MtransLLAMA across various datasets, exploring its transfer capabilities in downstream video datasets, including task transfer and scene transfer. As shown in Fig.~\ref{fig:visual} , we performed a comparative evaluation of MtransLLAMA with previous methods. In the sarcasm detection task, MTransLLAMA only inputs the question into the LLM and the dialogue into the multimodal fusion module, while other methods require inputting both the question and the dialogue. For sarcasm detection, MTransLLAMA provides excellent responses based on video information and textual dialogue, producing fewer hallucinations. In the youcook2 dataset, MTransLLAMA also demonstrated strong generalization capabilities in datasets with rare scenes.
+
+\section{Conclusion}
+Our model performs well when encountering scenes and tasks that were not seen during video pretraining. However, if the downstream task closely resembles the original pretraining dataset, such as CLEVRER-MC, our model's performance falls short compared to the original video analysis models.
+
+In this paper, we propose a novel LMM-based video understanding model that addresses the challenge of poor transferability and generalization in traditional video understanding models. This model achieves efficient transfer from an image-text LMM to a video-text LMM by incorporating temporal capabilities through parameter sharing and channel swapping in a pre-trained image-text model. Final experiments demonstrate that our model achieves state-of-the-art performance in multiple small-scale specific video scene datasets.
+
+\section*{Acknowledgments}
+This work is supported by National Key R\&D Program of China under Grant No. 2022ZD0162000.
