@@ -1,0 +1,35 @@
+You are an academic writing analyst and structural visualization assistant.
+
+The LaTeX source of a research paper is located in the folder: IEEE_LMM_Video.
+The main file is likely main.tex (or the primary .tex file in the folder).
+
+Your tasks:
+
+1. Parse all .tex files in the folder and reconstruct the full paper structure.
+2. Extract the macro-structure:
+   - Sections
+   - Subsections
+   - Subsubsections
+   - Ignore references, appendices, acknowledgements, and formatting commands.
+3. Present the structure in a clean hierarchical outline format.
+4. Analyze logical flow:
+   - How major sections connect (e.g., Problem → Method → Experiments → Conclusion)
+   - Dependencies between modules
+5. Generate a Mermaid flowchart (flowchart TD) that:
+   - Visualizes hierarchy
+   - Shows logical directional connections
+
+OUTPUT REQUIREMENTS:
+
+- Combine everything into a single Markdown file.
+- Structure the output as:
+
+# Paper Macro-Structure
+[Indented outline]
+
+# Logical Flow Analysis
+[Bullet points]
+
+# Structural Visualization (Mermaid)
+```mermaid
+[diagram here]
