@@ -365,192 +365,212 @@
 
     <!-- Slide 1: Title -->
     <div class="slide active" id="slide1">
-        <h1 contenteditable="false">AI-Assisted Learning of Academic Spoken Collocations</h1>
-        <p class="subtitle" contenteditable="false">Guided vs. Unguided Tasks in EAP Contexts</p>
+<h1 contenteditable="false">DiffFashion</h1>
+        <p class="subtitle" contenteditable="false">Reference-Based Fashion Design with Structure-Aware Transfer by Diffusion Models</p>
         <div class="author-info" contenteditable="false">
-            <p><strong>Paper by:</strong> Valentina Morgana & Francesca Poli</p>
-            <p><em>Journal of English for Academic Purposes</em> (2026)</p>
+            <p><strong>Authors:</strong> Shidong Cao; Wenhao Chai; Shengyu Hao; Yanting Zhang; Hangyue Chen; Gaoang Wang</p>
+            <p><em>IEEE Transactions on Multimedia</em> (Vol. 26, 2024)</p>
         </div>
         <div class="slide-number">1</div>
     </div>
 
     <!-- Slide 2: Opening Hook -->
     <div class="slide" id="slide2">
-        <span class="rubric-tag delivery">ENGAGING OPENING</span>
+<span class="rubric-tag delivery" contenteditable="false">MOTIVATION</span>
         <h2 contenteditable="false">The Challenge</h2>
+
         <div class="big-question" contenteditable="false">
-            How much guidance do learners need when using AI?
+            How can AI generate a new fashion image that keeps <em>clothing structure</em> while borrowing <em>appearance</em> from a reference?
         </div>
-        <p contenteditable="false" style="text-align: center; font-size: clamp(1.3rem, 2vw, 1.7rem); margin-top: 2em;">
-            Imagine preparing for an academic presentation and struggling to find the right phrases. You know what you want to say, but it doesn't sound academic enough. Now imagine having ChatGPT to help...
+
+        <p contenteditable="false" style="text-align: center; font-size: clamp(1.3rem, 2vw, 1.7rem); margin-top: 1.6em;">
+            In <strong>reference-based fashion design</strong>, we want to combine a <strong>source clothing image</strong> (structure) and a
+            <strong>reference appearance image</strong> (texture / style) to synthesize a realistic new clothing image.
         </p>
-        <p contenteditable="false" style="text-align: center; font-size: clamp(1.35rem, 2.1vw, 1.75rem); color: var(--color-primary); margin-top: 1em;">
-            <strong>Should the AI guide you step-by-step, or should you explore freely?</strong>
+
+        <p contenteditable="false" style="text-align: center; font-size: clamp(1.2rem, 1.8vw, 1.55rem); color: var(--color-primary); margin-top: 0.8em;">
+            Existing diffusion-based translation often fails when the <strong>reference domain differs</strong> from the source domain.
         </p>
-        <div class="transition-cue" contenteditable="false">Let's understand what this study investigated...</div>
+
+        <div class="transition-cue" contenteditable="false">So why do current methods collapse?</div>
         <div class="slide-number">2</div>
     </div>
 
     <!-- Slide 3: Introduction -->
     <div class="slide" id="slide3">
-        <span class="rubric-tag content">CONTENT & STRUCTURE</span>
-        <span class="rubric-tag content">NON-SPECIALIST</span>
-        <h2 contenteditable="false">What Are Academic Collocations?</h2>
-        
-        <p contenteditable="false"><strong>Collocations</strong> are word combinations that naturally appear together in academic contexts.</p>
-        
-        <div class="two-column">
-            <div class="example-box correct" contenteditable="false">
-                <h3 style="color: #4CAF50; margin-top: 0; font-size: clamp(1.2rem, 1.8vw, 1.5rem);">✓ Correct</h3>
-                <ul style="margin-left: 1.2em; font-size: clamp(1.15rem, 1.6vw, 1.4rem);">
-                    <li>significant findings</li>
-                    <li>conduct research</li>
-                    <li>theoretical framework</li>
-                </ul>
-            </div>
-            <div class="example-box incorrect" contenteditable="false">
-                <h3 style="color: #E76F51; margin-top: 0; font-size: clamp(1.2rem, 1.8vw, 1.5rem);">✗ Incorrect</h3>
-                <ul style="margin-left: 1.2em; font-size: clamp(1.15rem, 1.6vw, 1.4rem);">
-                    <li>big findings</li>
-                    <li>do research</li>
-                    <li>thinking framework</li>
-                </ul>
-            </div>
+<span class="rubric-tag content" contenteditable="false">PROBLEM ANALYSIS</span>
+        <span class="rubric-tag content" contenteditable="false">RESEARCH GAP</span>
+        <h2 contenteditable="false">Why Appearance Transfer Collapses</h2>
+
+        <div class="highlight-box" contenteditable="false">
+            <p><strong>Key issue:</strong> During <strong>reverse diffusion</strong>, it is hard to transfer appearance realistically.</p>
+            <p style="margin-bottom: 0;"><strong>Domain gap</strong> between reference appearance and source clothing can cause <strong>translation collapse</strong>.</p>
         </div>
 
-        <h3 contenteditable="false">The Research Gap</h3>
-        <p contenteditable="false">Even advanced learners struggle with collocations. Traditional teaching methods haven't been very effective, and we don't know the best way to use AI tools like ChatGPT for language learning.</p>
-        
-        <div class="transition-cue" contenteditable="false">So what did the researchers ask?</div>
+        <h3 contenteditable="false">What We Need</h3>
+        <ul contenteditable="false">
+            <li><strong>Preserve structure</strong> from the source clothing (shape, layout, garment parts)</li>
+            <li><strong>Transfer appearance</strong> from the reference image (texture, color, patterns)</li>
+            <li><strong>Maintain semantics</strong> in foreground clothing regions</li>
+        </ul>
+
+        <div class="transition-cue" contenteditable="false">DiffFashion: structure-aware guidance for diffusion.</div>
         <div class="slide-number">3</div>
     </div>
 
     <!-- Slide 4: Research Questions & Findings 1-2 -->
     <div class="slide" id="slide4">
-        <span class="rubric-tag content">KEY FINDINGS</span>
-        <h2 contenteditable="false">Research Questions</h2>
-        
-        <div class="highlight-box" contenteditable="false">
-            <p><strong>1.</strong> Does <strong>guided</strong> ChatGPT use help students learn collocations better than <strong>unguided</strong> exploration?</p>
-            <p style="margin-bottom: 0;"><strong>2.</strong> How do AI-assisted tasks compare to <strong>traditional methods</strong> without AI?</p>
-        </div>
+<span class="rubric-tag content" contenteditable="false">METHOD</span>
+        <h2 contenteditable="false">DiffFashion: Core Idea</h2>
 
-        <h2 contenteditable="false" style="margin-top: 1em;">Key Findings</h2>
-        
         <div class="finding-card f1" contenteditable="false">
-            <h3>Finding 1: Unguided AI Was More Effective</h3>
-            <p style="margin-bottom: 0;">Students who used ChatGPT <strong>freely</strong> (without structured guidance) used academic collocations <strong>more frequently and accurately</strong> than those following step-by-step activities. They experimented more with language and noticed useful patterns naturally.</p>
+            <h3>Structure-Aware Transfer in Diffusion</h3>
+            <p style="margin-bottom: 0;">
+                DiffFashion injects <strong>mixed guidance</strong> into the reverse diffusion process to
+                <strong>preserve clothing structure</strong> while transferring <strong>reference appearance</strong>.
+            </p>
         </div>
 
-        <div class="finding-card f2" contenteditable="false">
-            <h3>Finding 2: Both AI Groups Beat Non-AI Control</h3>
-            <p style="margin-bottom: 0;">Both AI groups performed significantly better than traditional learning. AI users produced <strong>richer, more varied</strong> academic language with approximately <strong>60 different collocations</strong> vs. far fewer in the control group.</p>
+        <div class="two-column">
+            <div class="example-box correct" contenteditable="false">
+                <h3 style="margin-top: 0;">Guidance 1: ViT Guidance</h3>
+                <p style="margin-bottom: 0; font-size: clamp(1.1rem, 1.5vw, 1.35rem);">
+                    Use a pre-trained <strong>Vision Transformer</strong> to provide robust semantic cues for appearance transfer.
+                </p>
+            </div>
+            <div class="example-box correct" contenteditable="false">
+                <h3 style="margin-top: 0;">Guidance 2: Foreground Mask</h3>
+                <p style="margin-bottom: 0; font-size: clamp(1.1rem, 1.5vw, 1.35rem);">
+                    Focus constraints on <strong>foreground clothing regions</strong> to avoid background leakage and preserve garment layout.
+                </p>
+            </div>
         </div>
 
-        <div class="transition-cue" contenteditable="false">But the gains took time to develop...</div>
+        <div class="transition-cue" contenteditable="false">Next: how diffusion is guided step-by-step.</div>
         <div class="slide-number">4</div>
     </div>
 
     <!-- Slide 5: Finding 3 & Significance -->
     <div class="slide" id="slide5">
-        <span class="rubric-tag content">KEY FINDINGS</span>
-        <span class="rubric-tag content">SIGNIFICANCE</span>
-        
-        <div class="finding-card f3" contenteditable="false">
-            <h3>Finding 3: Modest Gains Over Time</h3>
-            <p style="margin-bottom: 0;">The study tracked students over <strong>10 weeks</strong> with multiple tests. While AI users showed consistent improvement, overall gains weren't dramatic. This tells us: <strong>learning collocations takes time and repeated practice</strong>—even with AI, there are no shortcuts.</p>
-        </div>
+<span class="rubric-tag content" contenteditable="false">METHOD DETAILS</span>
+        <h2 contenteditable="false">Diffusion Process (High-Level)</h2>
 
-        <h2 contenteditable="false">Why This Matters</h2>
-        
-        <p contenteditable="false">This research challenges a widespread assumption: <strong>more structure doesn't always mean better learning</strong>. For proficient learners on familiar tasks, freedom to explore may be more beneficial than detailed scaffolding.</p>
+        <p contenteditable="false">
+            Diffusion models define a <strong>forward process</strong> that gradually adds Gaussian noise, and a <strong>reverse process</strong>
+            that learns to denoise and generate images.
+        </p>
 
         <div class="highlight-box" contenteditable="false">
-            <p style="margin-bottom: 0;"><strong>Key Insight:</strong> The way we design learning tasks with AI is just as important as using AI itself. This study provides evidence-based guidance for teachers about task design in the age of AI.</p>
+            <p><strong>DiffFashion</strong> adds structure-aware constraints during <strong>reverse diffusion</strong> to stabilize translation under domain gaps.</p>
         </div>
 
-        <div class="transition-cue" contenteditable="false">How does this influence my own research approach?</div>
+        <h3 contenteditable="false">Guided Reverse Diffusion</h3>
+        <ul contenteditable="false">
+            <li><strong>Semantic guidance</strong> from a pre-trained ViT improves appearance realism</li>
+            <li><strong>Foreground masking</strong> strengthens structure retention on garment regions</li>
+            <li><strong>Mixed guidance</strong> balances structure + appearance throughout denoising</li>
+        </ul>
+
+        <div class="transition-cue" contenteditable="false">What does “structure-aware transfer” enforce?</div>
         <div class="slide-number">5</div>
     </div>
 
     <!-- Slide 6: Impact on Research & Writing -->
     <div class="slide" id="slide6">
-        <span class="rubric-tag content">WRITING SKILLS</span>
-        <span class="rubric-tag content">EVIDENCE</span>
-        <h2 contenteditable="false">Impact on My Research & Writing</h2>
+<span class="rubric-tag content" contenteditable="false">STRUCTURE-AWARE TRANSFER</span>
+        <h2 contenteditable="false">How Structure is Preserved</h2>
 
-        <h3 contenteditable="false">Research Design Lessons</h3>
-        <ul contenteditable="false">
-            <li>Consider <strong>learner proficiency level</strong> when deciding how much structure to provide</li>
-            <li>Include proper <strong>control groups</strong> rather than assuming technology improves learning</li>
-            <li>Use <strong>mixed methods</strong>—combine quantitative analysis with qualitative insights</li>
-        </ul>
+        <div class="two-column">
+            <div class="example-box correct" contenteditable="false">
+                <h3 style="margin-top: 0;">Keep the Source Layout</h3>
+                <ul style="margin-left: 1.2em; font-size: clamp(1.1rem, 1.5vw, 1.35rem);" contenteditable="false">
+                    <li>Garment silhouette</li>
+                    <li>Part boundaries (collar, sleeves, etc.)</li>
+                    <li>Spatial arrangement</li>
+                </ul>
+            </div>
+            <div class="example-box correct" contenteditable="false">
+                <h3 style="margin-top: 0;">Transfer the Reference Look</h3>
+                <ul style="margin-left: 1.2em; font-size: clamp(1.1rem, 1.5vw, 1.35rem);" contenteditable="false">
+                    <li>Texture & patterns</li>
+                    <li>Color & material cues</li>
+                    <li>Appearance semantics</li>
+                </ul>
+            </div>
+        </div>
 
-        <h3 contenteditable="false">Writing Skills Learned</h3>
-        <ul contenteditable="false">
-            <li><strong>Transparent limitation discussion</strong> strengthens credibility</li>
-            <li><strong>Comprehensive literature integration</strong> that synthesizes (not just lists) previous studies</li>
-            <li><strong>Accessibility despite complexity</strong>—explain terms, use examples, provide clear signposting</li>
-            <li><strong>Connect to broader debates</strong> beyond the narrow study focus</li>
-        </ul>
+        <p contenteditable="false">
+            With mixed guidance, the method <strong>reduces collapse</strong> when the reference appearance domain differs greatly from the source domain,
+            producing more coherent and realistic fashion images.
+        </p>
 
-        <div class="transition-cue" contenteditable="false">What are the broader implications?</div>
+        <div class="transition-cue" contenteditable="false">Now: does it work in experiments?</div>
         <div class="slide-number">6</div>
     </div>
 
     <!-- Slide 7: Broader Implications -->
     <div class="slide" id="slide7">
-        <span class="rubric-tag content">SIGNIFICANCE</span>
-        <h2 contenteditable="false">Broader Implications for Education</h2>
+<span class="rubric-tag content" contenteditable="false">EXPERIMENTS</span>
+        <h2 contenteditable="false">Results</h2>
 
-        <div class="highlight-box" contenteditable="false">
-            <p style="font-size: clamp(1.3rem, 2vw, 1.7rem); margin-bottom: 0;"><strong>As AI tools become common in classrooms, teachers need evidence-based guidance about task design.</strong></p>
+        <div class="finding-card f2" contenteditable="false">
+            <h3>Better Realism and Fidelity</h3>
+            <p style="margin-bottom: 0;">
+                Experiments show DiffFashion <strong>outperforms state-of-the-art baselines</strong> in the fashion design task,
+                generating <strong>more realistic images</strong> while preserving structure and appearance semantics.
+            </p>
         </div>
 
-        <p contenteditable="false">The study developed the <strong>Academic Spoken Collocation List (ASCL)</strong>—focusing specifically on spoken academic language. This is important because academic presentations are unique: students prepare them in writing but deliver them orally.</p>
-
-        <h3 contenteditable="false">Key Takeaways</h3>
+        <h3 contenteditable="false">What Improves</h3>
         <ul contenteditable="false">
-            <li>The answer depends on <strong>learner proficiency and task familiarity</strong>—there's no one-size-fits-all approach</li>
-            <li>Rather than making students dependent on AI, <strong>open-ended interaction can encourage autonomy</strong></li>
-            <li>Students can notice language patterns, make choices, and <strong>take ownership of their learning</strong></li>
+            <li><strong>Realism</strong> of generated clothing appearance</li>
+            <li><strong>Structural similarity</strong> to the source clothing</li>
+            <li><strong>Robustness</strong> under large cross-domain differences</li>
         </ul>
 
-        <div class="transition-cue" contenteditable="false">Let me summarize the key message...</div>
+        <div class="transition-cue" contenteditable="false">So what are the main contributions?</div>
         <div class="slide-number">7</div>
     </div>
 
     <!-- Slide 8: Summary -->
     <div class="slide" id="slide8">
-        <span class="rubric-tag content">CONTENT & STRUCTURE</span>
-        <h2 contenteditable="false">Key Takeaway</h2>
+<span class="rubric-tag content" contenteditable="false">CONTRIBUTIONS</span>
+        <h2 contenteditable="false">What This Paper Contributes</h2>
 
-        <div class="highlight-box" contenteditable="false" style="font-size: clamp(1.35rem, 2.1vw, 1.75rem); padding: 2em;">
-            <p style="text-align: center; line-height: 1.5; margin-bottom: 0;">
-                When using AI for language learning, <strong style="color: var(--color-primary);">more guidance isn't always better</strong>. 
-                For proficient learners on familiar tasks, <strong style="color: var(--color-primary);">freedom to explore</strong> 
-                led to richer collocation use than structured steps.
-            </p>
+        <div class="highlight-box" contenteditable="false">
+            <p><strong>DiffFashion</strong> is a diffusion-based framework for <strong>reference-based fashion design</strong> with
+            <strong>structure-aware transfer</strong>.</p>
         </div>
 
-        <p contenteditable="false" style="margin-top: 2em; font-size: clamp(1.3rem, 2vw, 1.7rem);">
-            However, <strong>both AI approaches outperformed traditional instruction</strong>, highlighting AI's potential when designed thoughtfully.
-        </p>
+        <ul contenteditable="false">
+            <li>Introduces <strong>mixed guidance</strong> (pre-trained ViT + foreground mask) to preserve structure and transfer appearance</li>
+            <li>Addresses <strong>domain-gap-induced collapse</strong> in reverse diffusion</li>
+            <li>Generates <strong>realistic</strong> fashion images with improved structure and semantic fidelity</li>
+            <li>Outperforms state-of-the-art baselines in experiments</li>
+        </ul>
 
-        <div class="stats" contenteditable="false">Task design matters<br>as much as the AI itself</div>
-
-        <div class="transition-cue" contenteditable="false">Thank you for your attention...</div>
+        <div class="transition-cue" contenteditable="false">Wrap-up: key takeaways.</div>
         <div class="slide-number">8</div>
     </div>
 
     <!-- Slide 9: Closing -->
     <div class="slide" id="slide9">
-        <h1 contenteditable="false">Thank You</h1>
-        <p contenteditable="false" style="font-size: clamp(1.4rem, 2.2vw, 2rem); margin-top: 1em;">Questions?</p>
-        <div class="author-info" contenteditable="false" style="margin-top: 3em;">
-            <p><strong>Reference:</strong></p>
-            <p>Morgana, V., & Poli, F. (2026). Guided and unguided GenAI tasks for learning academic spoken collocations. <em>Journal of English for Academic Purposes</em>, 80, 101638.</p>
+<h2 contenteditable="false">Conclusion</h2>
+        <p contenteditable="false" style="text-align: center; font-size: clamp(1.35rem, 2.1vw, 1.75rem); margin-top: 1em;">
+            DiffFashion improves <strong>reference-based fashion generation</strong> by guiding diffusion with
+            <strong>structure-aware constraints</strong>.
+        </p>
+
+        <div class="highlight-box" contenteditable="false" style="max-width: 900px; margin: 1.4em auto;">
+            <p style="margin-bottom: 0;">
+                <strong>Takeaway:</strong> Mixed guidance (ViT + foreground mask) helps diffusion models transfer appearance
+                realistically while preserving clothing structure—especially under large domain gaps.
+            </p>
         </div>
+
+        <p contenteditable="false" style="text-align: center; color: var(--color-accent); font-weight: 600; margin-top: 1.2em;">
+            Thank you!
+        </p>
         <div class="slide-number">9</div>
     </div>
 

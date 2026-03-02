@@ -74,7 +74,7 @@ For each section, include notes on:
 
 Outline a plan for creating HTML presentation slides that includes:
 
-1. **Slide count estimate** — approximately 8–12 slides for an 8-minute presentation
+1. **Slide count estimate** — target **~9 slides** for an 8-minute presentation (keep it accessible and not text-heavy)
 2. **Slide-by-slide plan** — for each slide:
    - Title
    - Key content (bullet points, not full sentences)
