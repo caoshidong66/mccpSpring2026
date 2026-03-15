@@ -1,0 +1,214 @@
+
+
+\section{Proposed Method}
+\label{sec:method}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\linewidth]{figs/frame.pdf}
+\caption{The pipeline of our approach. {(a) Diffusion and Denoising}: We denoise the reference appearance image $\mathbf{x}^{A}_0$. In the denoising process, we use the mask in (b) to replace the background with pixel values obtained from the encoding process at the same timestamp. Mixed guidance is used in the denoising process. {(b) Mask Guidance}:
+We add noise to clothing image $\mathbf{x}^{S}_0$, and then use different label conditions to estimate the noise. The semantic mask of the $\mathbf{x}^{S}_0$ can be obtained from the noise difference. {(c) Structure Guidance} and {(d) Appearance Guidance}: We use DINO-VIT features to compute structure loss between $\mathbf{x}^{A}_t$ and $\mathbf{x}^{S}_0$, appearance loss between $\mathbf{x}^{A}_t$ and $\mathbf{x}^{A}_0$, to guide the denoising process. 
+% Purple dots and yellow dots represent the denoising process with the same timesteps respectively. 
+The pre-trained model is frozen and the gradient flow is updated directly on the output image.
+}
+\label{frame}
+\end{figure*}
+
+\subsection{Overview of Fashion Design with DiffFashion}
+% describe task
+Given a source clothing image $\mathbf{x}^{S}_0$ and a reference appearance image $\mathbf{x}^{A}_0$, our proposed \textit{DiffFashion} aims to design a new clothing fashion $\hat{\mathbf{x}}_0$ that can preserve the structure from $\mathbf{x}^{S}_0$ and the appearance from $\mathbf{x}^{A}_0$ while keeping it realistic, as shown in Fig.~\ref{example}. The detailed description of the notation is provided in Tab.~\ref{tab:parameters}.
+% challenges and issues
+Two main challenges need to be addressed when simply applying image translation methods in this setting. 
+Firstly, common image translation methods have a big performance drop when the source and reference images have large domain gaps. 
+Secondly, to ensure the realism of the generated results, image translation methods usually require a large number of training samples from both source and target domains. However, there is no samples available for newly designed output domains, resulting in a lack of guidance during the transfer process.
+
+The proposed DiffFashion addresses these two issues with a novel transfer strategy based on the optimal transport properties and mixed guidance to generate fashion output in the denoising process. The framework is shown in Fig.~\ref{frame} and details are illustrated in the following sections.
+
+
+
+\begin{table}[htbp]
+  \centering
+  \caption{Detailed description of the notations mentioned in this paper.}
+  \label{tab:parameters}
+  \begin{tabular}[width=1\textwidth]{l|l}
+    \toprule
+    Notation & Description \\
+    \midrule
+    $\mathbf{x}^S$ & structure image \\
+    $\mathbf{x}^A$ & appearance image \\
+    $\hat{\mathbf{x}}$ & predicted initial image from Tweedy's formula \\
+    $\mathbf{x}_t$ & image at timestamp $t$ in denoising process\\
+    $\mathbf{x}_{qt}$ & image at timestamp $t$ in forward process\\
+    $\boldsymbol{M}$ & object mask in the image\\
+    $y_p$ & positive class label \\
+    $y_n$ & negative class label \\
+    $\boldsymbol{M}_p$ & positive noise map\\
+    $\boldsymbol{M}_n$ & negative noise map\\
+    $\tilde{\mathbf{x}}$ & image after mask guidance\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Structure-aware Transfer Diffusion}
+
+For diffusion-based translation methods~\cite{kwon2022diffusion,kim2022diffusionclip}, they usually assume the source and target images are within the same or similar domains. In the denoising process, such methods initialize the target image by the input structure or content image to keep the structure similarity high enough, and then transfer the appearance or style based on the loss guidance. However, when there is a large domain gap between the source and reference images, it is difficult to transfer the appearance of the reference image to a new fashion clothing image with the loss of guidance. Besides, when using a natural non-clothing image for appearance reference, the generated texture becomes unrealistic and not suitable for clothing since these methods cannot well cover the large domain gaps.
+
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=1\linewidth]{figs/transfer.png}
+    \caption{Transfer difference between DiffuseIT and our method.}
+    \label{fig:transfer}
+\end{figure}
+To be specific, our proposed DiffFashion addresses the above challenges with a novel structure-aware transfer strategy. Unlike existing diffusion models~\cite{kwon2022diffusion} that take source image $\mathbf{x}^{S}_0$ as input and transfer the reference appearance image $\mathbf{x}^{A}_0$ to generate output target image $\hat{\mathbf{x}}_0$, we generate fashion clothes $\hat{\mathbf{x}}_0$ from $\mathbf{x}^{A}_0$ directly, as shown in Fig.~\ref{fig:transfer} . This transfer is guaranteed by the optimal transport properties \cite{khrulkov2022understanding} of the forward procedural encoder of DDPM. 
+Given an original data distribution $\varphi_0$, DDPM encoder performs a Monge optimal transport between $\varphi_0$ and $\mathcal{N}(\mathbf{0},\boldsymbol{I})$,
+\begin{equation}
+    \mathbf{x}^{A}_T = \mathbf{E}_{\varphi_0} = {\Sigma(0)}^{-0.5}(\mathbf{x}^{A}_0-\mathbf{a}(0)),
+\end{equation}
+with the assumption that $\varphi_0$ is an arbitrary multivariate normal distribution $\mathcal{N}(\mathbf{a}(0),\Sigma(0))$, and a quadratic cost function $c(x,y)$ as
+\begin{equation}
+    c(x,y) = c(\mathbf{x}^{A}_0,\mathbf{x}^{A}_T) = {\left \| \mathbf{x}^{A}_0-\mathbf{x}^{A}_T \right \|}^2.
+\end{equation}
+By solving the Fokker-Planck equation\cite{risken1996fokker} with the low-rank tensor approximations, khrulkov~\textit{et al.}~\cite{khrulkov2022understanding} prove that the original data distribution can be generalized to arbitrary distributions with extremely low error.
+
+With the optimal transport properties, it is demonstrated that the same DDPM encoding latent can be transferred into different domains under the conditions with different given labels. 
+% should have similar textures and semantic structures in the resulting natural images. 
+In DiffFashion, the same latent is shared for both appearance image $\mathbf{x}^{A}_0$ and fashion clothes $\hat{\mathbf{x}}_0$. The fashion clothing image has much semantic similarity to the reference appearance image $\mathbf{x}^{A}_0$. As result, we cover the domain gaps between reference appearance $\mathbf{x}^{A}_0$ and the fashion clothes $\hat{\mathbf{x}}_0$. Specifically, in each time step $t$ of the denoising process, we use the latent $\mathbf{x}^{A}_t$ of the reference appearance image to keep more appearance information to the output fashion. The latent of the reference image is gradually adapted to the clothing domain with $T$ time steps, as shown in Fig.~\ref{frame}. Simultaneously, mixed guidance is conducted in the denoising process, which is demonstrated in the next subsection. % good
+
+
+\subsection{Mixed Guidance for Denoising}
+% \subsection{Structure Guidance: ViT Feature Guidance}
+
+To further adapt the structure and appearance semantics to the output fashion image, we employ mixed guidance in the denoising process, including the pre-trained Vision Transformer (ViT) guidance and a foreground mask guidance. The details are illustrated as follows.
+
+\subsubsection{ViT Guidance}
+As mentioned in~\cite{tumanyan2022splicing,kwon2022diffusion}, the structure features and appearance features can be separated from DINO-ViT~\cite{amir2021deep}. We use both appearance and structure guidance in the denoising process to keep the output image realistic and faithful. 
+
+Following~\cite{tumanyan2022splicing,kwon2022diffusion}, we employ the global token($[CLS]$ token) in the last layer of ViT to guide the semantic appearance to be similar between the reference image $\mathbf{x}^{A}_0$ and the generated image $\hat{\mathbf{x}}^{A}_t$ at $t$-th step,
+\begin{equation}
+\begin{aligned}
+\label{eq12}
+& \mathcal{L}_{\text{app}}(\mathbf{x}^{A}_0,\hat{\mathbf{x}}^{A}_t) = \\
+& ||\boldsymbol{e}_{[CLS]}^L(\mathbf{x}^{A}_0\boldsymbol{M})-\boldsymbol{e}_{[CLS]}^L({\hat{\mathbf{x}}^{A}_t}\boldsymbol{M})||_2 + \lambda_{\text{MSE}}||\mathbf{x}^{A}_0-{\hat{\mathbf{x}}^{A}_t}||_2,
+\end{aligned}
+\end{equation}
+where $\boldsymbol{e}_{[CLS]}^L$ is the last layer $[CLS]$ token, and $\lambda_{\text{MSE}}$ is the coefficient of global statistic loss between images.
+%With the object semantic mask $M$. 
+To better leverage the appearance between the object and the appearance image,
+we use the object semantic mask $\boldsymbol{M}$ to remove the background pixel of $\hat{\mathbf{x}}^{A}_t$ in Eq.~\ref{eq12}, and only compute the appearance loss of the object within the mask. The generation of the mask is demonstrated in Section~\ref{sec:mask} later.
+
+In addition, we adopt a patch-wise method in the structural loss design to better leverage the local features. We adopt the $i$-th key vector in the $l$-th attention layer of the ViT model, denoted as $\boldsymbol{k}_i^l$, to preserve the structural information of the $i$-th patch of the source clothing image $\mathbf{x}^{S}_0$ as follows,
+
+\begin{equation}
+\begin{aligned}
+    \label{eq11}
+    & \mathcal{L}_{\text{struct}}(\mathbf{x}^{S}_0,\hat{\mathbf{x}}^{A}_t) = \\
+    & -\sum_{i}\log\left(\frac{\mathrm{sim}(\boldsymbol{k}_i^{l,S}, \boldsymbol{k}_i^{l,A})}{ \mathrm{sim}(\boldsymbol{k}_i^{l,S}, \boldsymbol{k}_i^{l,A}) + \sum_{j\neq i} \mathrm{sim}(\boldsymbol{k}_i^{l,S}, \boldsymbol{k}_j^{l,A})}\right),
+\end{aligned}
+\end{equation}
+where $\mathrm{sim}(\cdot,\cdot)$ is the exponential value of normalized cosine similarity, \textit{i.e.},
+\begin{equation}
+\label{eq13}
+    \mathrm{sim}(\boldsymbol{k}_i^{l,S}, \boldsymbol{k}_j^{l,A}) = \exp \left(\mathrm{cos}\left(\boldsymbol{k}^l_i(\mathbf{x}^{S}_0), \boldsymbol{k}^l_j(\hat{\mathbf{x}}^{A}_{t})\right)/\tau \right),
+\end{equation}
+and $\tau$ is the temperature parameter. 
+% Since the key $k^l_i$ contains the spatial information corresponding the i-th patch location in ViT's l-th self-attention layer. 
+By using the loss in Eq.~(\ref{eq11}), we minimize the loss between keys at the same position of two images while maximizing the loss between keys of different positions.
+% And for appearance loss guidance, we use both ViT guidance and normal L2 loss guidance as follow:
+Then our total loss for guidance is as follows:
+\begin{equation}
+\begin{aligned}
+    \label{eq14}
+    \mathcal{L}_{\text{total}} = \lambda_{\text{struct}}\mathcal{L}_{\text{struct}}+ \lambda_{\text{app}}\mathcal{L}_{\text{app}}, 
+\end{aligned}
+\end{equation}
+where $\lambda_{\text{struct}},\lambda_{\text{app}}$ are the coefficient of structure loss and appearance loss.
+
+
+\subsubsection{Mask Guidance}
+\label{sec:mask}
+
+Rather than only using ViT loss as semantic guidance in the denoising steps, we also generate the foreground mask of the source clothing image as the guidance to provide structural prior to the output fashion. 
+Existing methods commonly use additional inputs (\textit{i.e.} masks, boxes) to obtain the foreground region. However, this leads to increased annotation expenses. Instead, we propose a mask generation approach that can obtain the foreground mask without additional information or depending on any segmentation models.
+
+In the denoising process of the label-conditional diffusion model, there can be different noise estimates for the same latent given negative label conditions like \textit{phone} and the positive label \textit{bag}. For these different noise estimates, the regions of the foreground objects that are denoised tend to vary little in background regions but greatly in foreground regions. By taking the difference in the noise area, we can obtain the mask of the object to be edited, as shown in Fig.~\ref{frame}(a).
+
+Unlike the editing task that generates the mask with the latent in the forward process like \cite{couairon2022diffedit}, we generate the mask in the denoising process.
+% Instead of generating a mask with the latent of the forward process like \cite{couairon2022diffedit}, we observe that in the denoising process, 
+This is based on the observation that $\mathbf{x}^{S}_t$ in the reverse process has less perceptual appearance information than $\mathbf{x}^{S}_{qt}$ (the image in the forward process with timestamp $t$). 
+% Therefore, we generate a mask from the image in the denoising process $x^{S}_{t}$ instead of the image $x^{S}_{qt}$ in the forward process. 
+Although the structure of $\mathbf{x}^{S}_t$ may have some slight variations, it still provides a better representation of the overall structure information of the foreground object.
+
+Specifically, we input the source clothing image $\mathbf{x}^{S}_0$ into the diffusion model. 
+After DDPM encoding in the forward process to achieve $\mathbf{x}^{S}_T$, we obtain the image latent $\mathbf{x}^{S}_{T/2}$ in the half of the reverse process. 
+Denote the foreground label as $y_p$, representing the foreground clothing object. 
+% Denote non-foreground labels as $y_n$, representing negative objects. 
+% Using the true label, such as ``bag", we first generate a noise map:
+Then the noise map for the foreground clothing can be obtained by
+\begin{equation}
+\label{eq7}
+    \boldsymbol{M}_{p} = \epsilon_\theta(\hat{\mathbf{x}}^{S}_{T/2},T/2,y_p),
+\end{equation}
+where $\hat{\mathbf{x}}^{S}_{T/2}$ is the estimated source image predicted from $\mathbf{x}^S_{T/2}$ by the method of Tweedie  \cite{kim2021noise2score}, \textit{i.e.},
+\begin{equation}
+    \hat{\mathbf{x}}^S_{T/2} = \frac{\mathbf{x}_{T/2}}{\sqrt{\Bar{\alpha}_{T/2}}} - \frac{\sqrt{1-\Bar{\alpha}_{T/2}}}{\sqrt{\Bar{\alpha}_{T/2}}}{ \epsilon}_\theta(\mathbf{x}^S_{T/2},T/2,y_p).
+\label{eqadd1}
+\end{equation}
+Denote non-foreground labels as $y_n$, representing negative objects.
+We use $N$ different non-foreground label conditions to get an averaged noise map, \textit{i.e.},
+\begin{equation}
+\label{eq8}
+    \boldsymbol{M}_{n} = \frac{1}{N} \sum_{i=1}^N\epsilon_{\boldsymbol{\theta}}(\hat{\mathbf{x}}^{S}_{T/2},T/2,y_{i}),
+\end{equation}
+where $i \in \{1, ..., N\}$.
+Then the difference between the two noise maps $\boldsymbol{M}_p$ and $\boldsymbol{M}_n$ can be obtained. A threshold is set for binarization, which returns an editable semantic mask $\boldsymbol{M}$ for the foreground clothing region.
+
+As shown in Fig.~\ref{frame}{(b)}, the appearance image $\mathbf{x}^{A}_0$ is first used to be encoded by the forward process of DDPM. Then the mask-guided denoising process is employed. 
+Specifically, at each step in the denoising process, we estimate the new prediction $\mathbf{x}^{A}_t$ from the diffusion model as follows, 
+\begin{equation}
+\label{eq9}
+\mathbf{x}^{A}_t=\frac{1}{\sqrt{\alpha_{t+1}}}(\mathbf{x}^{A}_{t+1}-\frac{1-\alpha_{t+1}}{\sqrt{1-\overline{\alpha}_{t+1}}}\epsilon_{\boldsymbol{\theta}}(\mathbf{x}^{A}_{t+1},t+1,y_p)).
+\end{equation}
+Then we combine the transferred foreground appearance $\mathbf{x}^{A}_t$ and the clothing image of corresponding timestamp $\mathbf{x}^{S}_{qt}$ with the generated mask $\boldsymbol{M}$ as guidance, \textit{i.e.}, 
+% We keep the pixels in the mask, and for the pixels outside the mask, we use the bag image with the pixels of corresponding timestep $x_{qt}$ to mix with $x^{\prime}_t$. 
+\begin{equation}
+\label{eq10}
+    \tilde{\mathbf{x}}^{A}_t = \boldsymbol{M} \cdot  \mathbf{x}^{A}_t + (1 - \boldsymbol{M})\cdot \mathbf{x}^{S}_{qt} ,
+\end{equation}
+where $\omega_{\text{mix}}$ is the mix ratio of the appearance image and the clothing image.
+This change ensures that the appearance information in the mask is transferred, while other structural information keeps consistent with the clothing image. After $T$ denoising steps, we obtain the final output fashion image $\hat{\mathbf{x}}_0=\tilde{\mathbf{x}}^{A}_0$. The whole inference procedure is shown as Alg.~\ref{alg}.
+
+\begin{algorithm}[H]
+  \caption{Fashion Generation} 
+  \label{alg}
+  \begin{algorithmic}[1]
+    \STATE Input structure image $\mathbf{x}_0^S$ and appearance image $\mathbf{x}_0^A$, After the inference, the diffusion model generate the result image.
+    \STATE \textit{Forward process,add noise to structure image}
+    \STATE $t \sim \textit{Uniform}(\{1, \dotsc, T\})$
+    \STATE $\boldsymbol{\sigma} \sim \mathcal{N}(\mathbf{0},\boldsymbol{I})$
+    \STATE $\mathbf{x}_T^S \gets\sqrt{\overline{\alpha}_T}\mathbf{x}_0^S + \sqrt{(1 - \overline{\alpha}_T)}\boldsymbol{\epsilon}$
+    \STATE \textit{Denoising process of structure image}
+    \FOR{$t=1, \dotsc, T$}
+    \STATE $\mathbf{x}_{t-1}^S\gets\frac{1}{\sqrt{\alpha_t}}(\mathbf{x}_t^S-\frac{1-\alpha_t}{\sqrt{1-\overline{\alpha}_t}}\epsilon_{\boldsymbol{\theta}}(\mathbf{x}_t^S,y_p,t))$
+    \ENDFOR
+    \STATE \textit{Get mask from noise estimation}
+    %\STATE $\hat{\mathbf{x}}^S_{T/2} = \frac{\mathbf{x}_{T/2}}{\sqrt{\Bar{\alpha}_{T/2}}} - \frac{\sqrt{1-\Bar{\alpha}_{T/2}}}{\sqrt{\Bar{\alpha}_{T/2}}}{ \epsilon}_\theta(\mathbf{x}^S_{T/2},T/2,y_p)$
+    \STATE $\hat{\mathbf{x}}^S_{T/2} \gets$ predicted from $\mathbf{x}^S_{T/2}$ with Eq.(12)
+    \STATE $\boldsymbol{M}\gets\epsilon_\theta(\hat{\mathbf{x}}^{S}_{T/2},T/2,y_p)-\frac{1}{N} \sum_{i=1}^N\epsilon_{\boldsymbol{\theta}}(\hat{\mathbf{x}}^{S}_{T/2},T/2,y_{i})$
+    \STATE \textit{Generation with guidance in denoising process}
+    \FOR{$t=T, \dotsc, 1$}
+      \STATE $\mathbf{x}_{t-1}^A\gets\frac{1}{\sqrt{\alpha_t}}(\mathbf{x}_t^S-\frac{1-\alpha_t}{\sqrt{1-\overline{\alpha}_t}}\epsilon_{\boldsymbol{\theta}}(\mathbf{x}_t^S,y_p,t))$
+      \STATE $\boldsymbol{L} \gets $ViT Loss Guidance with Eq.(7)(8)(9)(10)
+      \STATE $\mathbf{x}_{t-1}^A\gets\mathbf{x}_{t-1}^A + \nabla_{x}\boldsymbol{L}$
+      \STATE \textit{Perform ViT guidance }
+      \IF{$t<kT$}
+      \STATE $x_{qt}^S\gets\sqrt{\overline{\alpha}_t}\mathbf{x}_0^S + \sqrt{(1 - \overline{\alpha}_t)}\boldsymbol{\epsilon}$
+      \STATE $\mathbf{x}_{t-1}^A\gets\boldsymbol{M} \cdot  \mathbf{x}^{A}_{t-1} + (1 - \boldsymbol{M})\cdot \mathbf{x}^{S}_{qt}$
+      \STATE \textit{Perform Mask guidance }
+      \ENDIF
+    \ENDFOR
+
+    
+  \end{algorithmic}
+\end{algorithm}
+
+% https://zhuanlan.zhihu.com/p/266241159

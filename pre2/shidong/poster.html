@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DiffFashion Poster</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --ink: #17324d;
+      --accent: #0f766e;
+      --accent-soft: #dff5f2;
+      --warm: #f6efe4;
+      --panel: #ffffff;
+      --paper: #f4f7f9;
+      --line: #cfd8df;
+      --muted: #4b5f70;
+    }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #eaf1f4 0%, #f7fafb 100%);
+      color: #18242f;
+      font-family: "Times New Roman", Times, serif;
+    }
+    .poster {
+      width: 841px;
+      min-height: 1189px;
+      max-width: 100%;
+      margin: 0 auto;
+      background: var(--panel);
+      box-shadow: 0 24px 60px rgba(23, 50, 77, 0.12);
+    }
+    .poster-header {
+      padding: 28px 34px 22px;
+      border-bottom: 3px solid var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(23, 50, 77, 0.10), transparent 22%),
+        #ffffff;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      font: 700 14px/1.2 Arial, Helvetica, sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .poster-title {
+      margin: 0;
+      font: 700 40px/1.08 Arial, Helvetica, sans-serif;
+      color: var(--ink);
+    }
+    .poster-meta {
+      margin: 10px 0 0;
+      font-size: 21px;
+      color: var(--muted);
+    }
+    .takeaway {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-left: 5px solid var(--accent);
+      background: var(--accent-soft);
+      font-size: 20px;
+      line-height: 1.4;
+    }
+    main {
+      padding: 24px 30px 30px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    section {
+      padding: 18px 18px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #ffffff;
+    }
+    section.full {
+      grid-column: 1 / -1;
+    }
+    h2 {
+      margin: 0 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #d7e3ea;
+      font: 700 26px/1.15 Arial, Helvetica, sans-serif;
+      color: var(--ink);
+    }
+    p, li {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+    ul {
+      margin: 0;
+      padding-left: 1.2em;
+    }
+    .problem-boxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .mini-box {
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--warm);
+      border: 1px solid #ead9b8;
+    }
+    .mini-box strong,
+    .step strong,
+    .result-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+    }
+    .method-flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 12px 0 14px;
+    }
+    .step {
+      padding: 14px;
+      border-radius: 12px;
+      background: #f7fbfc;
+      border: 1px solid #d5e4ea;
+      min-height: 144px;
+    }
+    .contrib-list li {
+      margin-bottom: 10px;
+    }
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 12px 0 14px;
+    }
+    .result-card {
+      padding: 14px;
+      border-radius: 12px;
+      background: #f6fbf8;
+      border: 1px solid #d4e8df;
+      text-align: center;
+    }
+    .big-num {
+      display: block;
+      margin: 4px 0;
+      font: 700 30px/1 Arial, Helvetica, sans-serif;
+      color: var(--accent);
+    }
+    .caption {
+      font-size: 16px;
+      color: var(--muted);
+    }
+    .footer-note {
+      margin-top: 10px;
+      font-size: 16px;
+      color: var(--muted);
+    }
+    @media (max-width: 860px) {
+      .poster {
+        width: 100%;
+        box-shadow: none;
+      }
+      .grid,
+      .method-flow,
+      .results-grid,
+      .problem-boxes {
+        grid-template-columns: 1fr;
+      }
+      .poster-title {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <article class="poster">
+    <header class="poster-header">
+      <p class="eyebrow">Academic Poster Draft</p>
+      <h1 class="poster-title">DiffFashion: Reference-based Fashion Design with Structure-aware Transfer by Diffusion Models</h1>
+      <p class="poster-meta">Presenter: Shidong Cao</p>
+      <div class="takeaway">
+        <strong style="font-family: Arial, Helvetica, sans-serif; color: var(--ink);">One-sentence takeaway</strong>
+        DiffFashion generates new clothing designs by combining the structure of a source garment with the appearance of a reference image, even when the two images come from very different domains.
+      </div>
+    </header>
+
+    <main>
+      <div class="grid">
+        <section class="full">
+          <h2>Background</h2>
+          <p>AI-based fashion design aims to support designers by generating new clothing concepts from visual references. A useful setting is <strong>reference-based fashion design</strong>: starting from a clothing image and a separate appearance image, generate a realistic new fashion item that keeps the garment shape while borrowing colors, textures, or patterns from the reference.</p>
+          <p>Diffusion models are attractive for this task because they can generate realistic images and work in a zero-shot setting, without training a new model for every new style.</p>
+        </section>
+
+        <section>
+          <h2>Research Problem</h2>
+          <p>Existing image translation and style transfer methods struggle in this setting for two main reasons.</p>
+          <div class="problem-boxes">
+            <div class="mini-box">
+              <strong>Large domain gap</strong>
+              A clothing image and a reference image such as marine life or natural objects can be semantically very different, so appearance transfer often collapses or looks unrealistic.
+            </div>
+            <div class="mini-box">
+              <strong>No paired training data</strong>
+              Newly designed target fashions do not have ground-truth samples, so supervised training is not practical and structure is easily lost during generation.
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Method</h2>
+          <p>DiffFashion uses a diffusion-based, unsupervised structure-aware transfer pipeline.</p>
+          <div class="method-flow">
+            <div class="step">
+              <strong>1. Shared latent transfer</strong>
+              The method starts from the reference appearance image and keeps a shared DDPM latent so appearance information can gradually adapt into the clothing domain.
+            </div>
+            <div class="step">
+              <strong>2. ViT mixed guidance</strong>
+              DINO-ViT features guide both structure and appearance: local patch features preserve garment layout, while global features preserve reference semantics.
+            </div>
+            <div class="step">
+              <strong>3. Automatic mask guidance</strong>
+              A foreground mask is generated from diffusion noise differences, then used to keep clothing structure without requiring manual annotations.
+            </div>
+          </div>
+          <p class="caption">Pipeline summary: reference image provides appearance, source clothing image provides structure, and the diffusion process combines them into a realistic new fashion output.</p>
+        </section>
+
+        <section>
+          <h2>Key Contributions</h2>
+          <ul class="contrib-list">
+            <li>Introduces <strong>DiffFashion</strong>, an unsupervised diffusion framework for reference-based fashion design.</li>
+            <li>Proposes a <strong>shared-latent transfer strategy</strong> motivated by optimal transport properties to handle large source/reference domain gaps.</li>
+            <li>Combines <strong>ViT appearance and structure guidance</strong> with <strong>automatic foreground mask guidance</strong> for better realism and garment preservation.</li>
+            <li>Builds the <strong>OceanBag</strong> benchmark with 6,000 handbag images and 2,400 marine-life reference images, and validates the method on other clothing categories.</li>
+          </ul>
+        </section>
+
+        <section class="full">
+          <h2>Results</h2>
+          <p>DiffFashion is compared with DiffuseIT, Splice, WCT2, and SANet on OceanBag and other clothing datasets. The method achieves the best overall balance between realism, structure preservation, and appearance transfer.</p>
+          <div class="results-grid">
+            <div class="result-card">
+              <strong>User Study Overall</strong>
+              <span class="big-num">73.6</span>
+              <span class="caption">Best score on OceanBag</span>
+            </div>
+            <div class="result-card">
+              <strong>Appearance Score</strong>
+              <span class="big-num">49.4</span>
+              <span class="caption">Best subjective appearance transfer</span>
+            </div>
+            <div class="result-card">
+              <strong>LPIPS (Appearance)</strong>
+              <span class="big-num">0.754</span>
+              <span class="caption">Best objective appearance similarity</span>
+            </div>
+            <div class="result-card">
+              <strong>FID</strong>
+              <span class="big-num">131.8</span>
+              <span class="caption">Second-best realism, while preserving transfer</span>
+            </div>
+          </div>
+          <ul>
+            <li>DiffuseIT preserves shape reasonably well but transfers too little appearance.</li>
+            <li>Splice transfers appearance better but often produces unrealistic outputs.</li>
+            <li>WCT2 obtains strong realism and structure scores, but mainly changes color rather than generating new fashion textures.</li>
+            <li>DiffFashion provides the strongest overall trade-off, especially when the reference image comes from a very different domain.</li>
+          </ul>
+          <p class="footer-note">Ablation results also show that mask guidance and ViT structure guidance are important for preserving garment structure.</p>
+        </section>
+
+        <section class="full">
+          <h2>Conclusion</h2>
+          <p>DiffFashion addresses a difficult but practical design problem: generating new clothing from a garment image and an unrelated visual reference without paired training data. Its shared-latent transfer and mixed-guidance design allow realistic fashion synthesis across large domain gaps.</p>
+          <p>The main limitation is mask quality: because masks are generated from diffusion behavior, some cases still require selection or tuning. Future work will improve mask generation with richer conditions or additional modalities.</p>
+        </section>
+      </div>
+    </main>
+  </article>
+</body>
+</html>

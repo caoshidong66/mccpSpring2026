@@ -1,0 +1,36 @@
+\section{Preliminary of Denoising Diffusion Probabilistic Models }
+\label{sec:ddpm}
+
+Diffusion probabilistic models \cite{ho2020denoising,song2020denoising,song2020score} are a type of latent variable model that consists of a forward diffusion process and a reverse diffusion process. In the forward process, we gradually add noise to the data, and then sample the latent $\mathbf{x}_t$ for $t=1,..., T$ as a sequence. Noise added to data in each step is sampled from a Gaussian distribution, and the transmission can be represented as $q(\mathbf{x}_t|\mathbf{x}_{t-1})=\mathcal{N} (\sqrt{1-\beta_{t}}\mathbf{x}_{t-1}, \beta_{t}\boldsymbol{I})$, where the Gaussian variance $\{\beta_{t}\}_{t=0}^{T}$ can either be learned or scheduled. Importantly, the final latent encoding by the forward process can be directly obtained by,
+% \begin{center}
+\begin{equation}
+\label{eq1}
+\mathbf{x}_t = \sqrt{\overline{\alpha}_t}\mathbf{x}_0 + \sqrt{(1 - \overline{\alpha}_t)}\boldsymbol{\epsilon},  
+     \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0},\boldsymbol{I}), 
+\end{equation}
+% \end{center}
+where $\alpha_t=1 - \beta_t$ and $\overline{\alpha}_t=\prod_{s=1}^t \alpha_s$.
+Then in the reverse process, the diffusion model learns to reconstruct the data by denoising gradually. A neural network is applied to learn the parameter $\boldsymbol{\theta}$ to reverse the Gaussian transitions by predicting $\mathbf{x}_{t-1}$ from $\mathbf{x}_{t}$ as follow,
+% \begin{center}
+\begin{equation}
+\label{eq2}
+p_\theta(\mathbf{x}_{t-1}|\mathbf{x}_t)=\mathcal{N}(\mathbf{x}_{t-1};{\mu}_{\boldsymbol{\theta}}(\mathbf{x}_t,t),\sigma^2\boldsymbol{I}).
+\end{equation}
+% \end{center}
+To achieve a better image quality, the neural network takes the sample $\mathbf{x}_t$ and timestamp $t$ as input, and predicts the noise added to $\mathbf{x}_{t-1}$ in the forward process instead of directly predicting the mean of $\mathbf{x}_{t-1}$. 
+The denoising process can be defined as,
+% The mean of $x_{t-1}$ is a linear combination of the noise and $x_t$, \textit{i.e.}, 
+% The variances $\beta_t$ can be either learned by the neural network or fixed by the noise scheduled in the forward process:
+\begin{equation}
+    \label{eq3}
+    {\mu}_{\boldsymbol{\theta}}(\mathbf{x}_t,t)=\frac{1}{\sqrt{\alpha_t}}(\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{1-\overline{\alpha}_t}}\epsilon_{\boldsymbol{\theta}}(\mathbf{x}_t,t)),
+\end{equation}
+where $\epsilon_{\boldsymbol{\theta}}(\mathbf{x}_t,t)$ is the diffusion model trained by minimizing the objective, \textit{i.e.},
+\begin{equation}
+\label{eq4}
+% {min}_{\boldsymbol{\theta}} 
+\mathcal{L}(\boldsymbol{\theta})=E_{t,\mathbf{x}_0,\boldsymbol{\epsilon}}[(\boldsymbol{\epsilon}-\epsilon_{\boldsymbol{\theta}}(\sqrt{\overline{\alpha}_t}\mathbf{x}_0+\sqrt{1-\overline{\alpha}_t}\boldsymbol{\epsilon},t))^2].
+\end{equation}
+
+In the image translation task, there are two mainstream methods to complete the translation. One uses the conditional diffusion model, which takes extra conditions, such as text and labels as input in the denoising process. Then the diffusion model $\epsilon_{\boldsymbol{\theta}}$ in Eq.~(\ref{eq3}) and Eq.~(\ref{eq4}) can be replaced with $\epsilon_{\boldsymbol{\theta}}(\mathbf{x}_t,t,y)$, where $y$ is the condition.
+The other type of method \cite{dhariwal2021diffusion} uses pre-trained classifiers to guide the diffusion model in the denoising process and freezes the weights of the diffusion model. With the diffusion model and a pre-trained classifier $p_{\boldsymbol{\phi}}(y|\mathbf{x}_t)$, the denoising process $\mu_{\boldsymbol{\theta}}(\mathbf{x}_t,t)$ in Eq.~(\ref{eq3}) can be supplemented with the gradient of the classifier, \textit{i.e.}, $\hat{\mu}_{\boldsymbol{\theta}}(\mathbf{x}_t,t)=\mu_{\boldsymbol{\theta}}(\mathbf{x}_t,t) + \sigma_t\nabla log p_{\boldsymbol{\phi}}(y|\mathbf{x}_t)$. 

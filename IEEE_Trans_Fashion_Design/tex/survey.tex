@@ -1,0 +1,27 @@
+\section{Related Work}
+\label{sec:related_work}
+
+\subsection{Fashion Design}
+Fashion design models aim to design new clothing from a given clothing collection. Sbai et al. \cite{sbai2018design} first use GAN to learn the encoding of clothes, and then use the latent vector to perform the stylistic transformation.
+Recently, there has been an increased focus on intelligent fashion design, with more methods aiming to design new fashion items based on disentangled textures and shapes. Inspired by Conditional GAN\cite{antipov2017face}, Sketched-based methods\cite{cui2018fashiongan,yan2022toward_tmm} use the sketch image of the clothes to control the generated structure. However, these methods require additional information input, and using texture propagation will decrease the realism of the generated images.
+
+Jiang et al. \cite{jiang2021deep} first combine the methods of patch-based GAN and NST to extract texture information more comprehensively. Yan et al. \cite{yan2023toward} combined patch-based GAN and a learnable semantic disentanglement attention-based encoder to better disentangle the structure and texture information, which enhances the authenticity of the generated results. However, training a patch-based GAN requires a large amount of data. In addition, because the transformation is based on the patch similarity, the generated results mainly involve the transfer of overall color and small local textures, rather than the patterns of the reference image. Besides, all these GAN-based methods involve adversarial training, which can be challenging, and these methods are limited to the dataset on which they are trained.
+
+
+\subsection{Image-to-Image Translation}
+The image-to-image translation often uses a GAN network to learn the mapping between the source and the target domain. Paired data methods like \cite{isola2017image,zhu2017toward} use the target image corresponding to each input for the condition in the discriminator. Unpaired data methods like \cite{dong2017unsupervised,huang2018multimodal,saito2020coco} decouple the common content space and the specific style space in an unsupervised way. But both these methods require amounts of data from both domains. Besides, the encoding structure of GANs makes it difficult to decouple appearance and structural information. When the gap between the two domains is too large, the result may not be transformed \cite{saito2020coco,zhu2017unpaired,lee2018diverse} or have lost information from the original domain \cite{yang2022unsupervised}.
+
+Recently, denoising diffusion probabilistic models (DDPMs) have emerged as a promising alternative to GANs in image-to-image translation tasks.
+Palette \cite{saharia2022palette} firstly applies the diffusion model in image translation and achieves good results in colorization, inpainting, and other tasks.
+% Palette \cite{saharia2022palette} is among the first to apply the diffusion model in image translation, and achieves good results in colorization, inpainting and other tasks. 
+However, this approach requires the target image as a condition for diffusion, making it infeasible for unsupervised tasks. 
+For appearance transfer, DiffuseIT \cite{kwon2022diffusion} uses the same DINO-ViT guidance as \cite{tumanyan2022splicing}, which greatly improves the realism of the transformation. However, it still cannot solve the problem of lacking matching objects in the clothing design task.
+
+ 
+\subsection{Neural Style Transfer (NST)}
+
+Neural style transfer (NST) has shown great success in transferring artistic styles.
+There are mainly two types of approaches to modeling the style or visual texture in NST. One is based on statistical methods \cite{gatys2016image,huang2017arbitrary}, in which the style is characterized as a set of spatial summary statistics. The other is based on non-parametric methods, such as using Markov Random Field \cite{li2016combining,li2016precomputed}, in which they swap the content neural patches with the most similar ones to transfer the style. 
+After texture modeling, a pre-trained convolutional neural network (CNN) network is used to complete the style transfer. Although NST-based methods work well for global artistic style transfer, their content/style decoupling process is not suitable for fashion design. 
+In addition, NST-based methods assume the transfer is between similar objects or domains.
+Tumanyan et al. \cite{tumanyan2022splicing} propose a new NST loss from DINO-ViT, which succeeds in transferring appearance  between two semantically related objects, such as ``cat and dog" or ``orange and ball". However, in our task, there are no specific related objects between the clothing image and the appearance image.

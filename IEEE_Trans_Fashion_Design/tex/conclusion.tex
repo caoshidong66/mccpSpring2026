@@ -1,0 +1,15 @@
+\section{Failure Cases and Limitations}
+
+For a small number of cases where the source and reference images have simple or similar positional structures, ViT can be used to achieve structural transfer. In such cases, using a mask can lead to a loss of visual similarity, as shown in Fig.~\ref{Failure1}. Though our method can generate good fashion output, the method without mask guidance achieves slightly better performance. Also, due to the randomness of the diffusion, the generated masks may need further selection.
+
+\section{Conclusion and future work}
+\label{sec:conclude}
+
+% \noindent\textbf{Conclusion} 
+In this paper, we tackle a new fashion design setting: designing new clothing fashion from a given clothing image and a natural appearance image, while keeping the structure of the clothing with a similar appearance to the natural image. We propose a novel diffusion-based image-to-image translation framework by swapping the input latent with structure transfer. And the model is guided by an automatically generated foreground mask and both structure and appearance information from the pre-trained DINO-ViT model.
+% And we further proposed a structure transfer guidance method by using the mask automatically obtained from the diffusion model. 
+The experimental results have shown that our proposed method outperforms most baselines, demonstrating that our method can better balance authenticity and structure preservation while also achieving appearance migration.
+% \noindent\textbf{Limitation and Future Work} 
+% Although we reduce the dependence of the performance on the mask by using soft mask guidance. However, due to the randomness of diffusion, the mask cannot guarantee good results every time. And for some pictures, due to the high similarity with the background, we cannot obtain a better mask, which will lead to insignificant appearance migration.
+% Due to the randomness of diffusion, the mask cannot guarantee good results every time. 
+In the future, we will try to constrain the diffusion model using the information condition of other modalities to generate better masks. 

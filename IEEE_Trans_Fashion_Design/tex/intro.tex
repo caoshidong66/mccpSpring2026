@@ -1,0 +1,49 @@
+\section{Introduction} 
+Image-based fashion design with artificial intelligence (AI) techniques \cite{ganesan2017fashioning,yan2022toward,sbai2018design,kim2019style,yan2022toward_tmm,zhou2022coutfitgan} has attracted increasing attention in recent years.
+There is a growing expectation that AI can provide inspiration for human designers to create new fashion designs. One of the emerging tasks in fashion design is to add specific texture elements from non-fashion domain images into clothing images to create new fashions. For example, given a source clothing image, a designer may want to generate a new fashion design with the appearance of another domain object as a reference, as shown in Fig.~\ref{example}.
+
+
+Generative adversarial network (GAN)-based methods \cite{yan2022toward,yuan2020garment,cui2018fashiongan} are commonly adopted in the fashion design task. However, GAN-based methods have several limitations. They usually require a large number of training samples to ensure the realism of the new fashion. In addition, it is difficult to generalize the trained model to novel and unseen styles. Furthermore, they can hardly have good control over the appearance and shape of clothes when transferring from non-fashion domain images.
+Image transfer methods, like neural style transfer (NST), have shown great success in transferring artistic styles \cite{gatys2016image,huang2017arbitrary,li2016combining,li2016precomputed}. They have more flexibility than GAN-based methods, which can be easily extended to novel-style translation. 
+Recently, diffusion models \cite{ho2020denoising,song2020denoising,song2020score} have been applied in various generative tasks, such as text image generation \cite{ramesh2022hierarchical,saharia2022photorealistic} and image translation \cite{gal2022image}, due to the realism of their generated results.
+Some approaches \cite{kwon2022diffusion,tumanyan2022splicing} consider both structure and appearance in image transfer. For example, Kwon et al.~\cite{kwon2022diffusion} use a diffusion model and a special structural appearance loss for appearance transfer, which performs well in transforming the appearance between similar objects, such as from zebras to horses and from cats to dogs. 
+
+However, there are two main challenges when applying the commonly used image transfer methods to the reference-based fashion design task.
+% shown in Fig.~\ref{example}.
+First, common image transfer methods have a big degradation when \textbf{the source and reference images have large domain gaps}. As shown in the examples of Fig.~\ref{example}, the source is the handbag image, while the reference is the ocean animal image. The semantic features of reference appearance images are usually far different from the source clothing images. 
+% First, common image transfer methods only consider the translation between semantically similar images or objects. 
+% For example, the transformation in \cite{kwon2022diffusion} is based on the similarity of the semantically related objects in vision transformer (ViT) \cite{amir2021deep} features. In the reference-based fashion design task, the semantic features of reference appearance images are always far different from the source clothing images. 
+As a result, commonly used image transfer methods usually generate unrealistic fashions in this task and difficult to transfer the appearance. Besides, these methods only transfer the style or appearance, which can hardly convert the appearance to a suitable texture material by using a non-clothing image. 
+For example, the recently proposed diffusion-based methods \cite{kwon2022diffusion}, is based on the similarity of the semantically related objects in vision transformer (ViT) \cite{amir2021deep} features, which generates poor results in the reference-based fashion design task.
+Second, to ensure the realism of the generated results, image transfer methods usually \textbf{require a large number of training samples from both source and target domains} \cite{saharia2022palette}. However, there are no samples available for newly designed output domains, resulting in a lack of guidance during the transfer process. Thus, the generated new fashion images are likely to lose the structural information of the input clothing images.
+% \begin{figure}[!t]
+%     \centering
+%     \includegraphics[width=1\linewidth]{figs/transfer.pdf}
+%     \caption{Examples of different transfer methods.}
+%     \label{fig:transfer}
+% \end{figure}
+To address the aforementioned issues, we propose an unsupervised transfer framework based on diffusion models, namely \textit{DiffFashion}, which semantically generates new fashion clothes from a source clothing image and a reference appearance image. 
+Our method is \textbf{free of model tuning in adapting to novel styles and objects}, \textbf{structure-preserving}, and has \textbf{high flexibility in transferring from images with large domain gaps}.
+% Unlike existing diffusion-based image translation methods that images from different domains use different latent embeddings in the denoising process \cite{kwon2022diffusion}, we keep a shared latent across clothing image and reference appearance image based on the optimal transport properties to bridge the gap between the two domains, largely improving the transferable capability. 
+In contrast to existing diffusion-based image translation methods, where images from different domains employ distinct latent embeddings in the denoising process \cite{kwon2022diffusion}, our approach maintains a shared latent representation across clothing images and reference appearance images. This shared latent representation, guided by optimal transport properties, serves to bridge the gap between the two domains, significantly enhancing the transferability capability. In the diffusion reverse process, the latent representation of the reference image is gradually adapted to the clothing domain. 
+Simultaneously, the structure is transferred from the source clothing to the output fashion image with mixed guidance, including the pre-trained Vision Transformer (ViT) guidance and a foreground mask guidance, to further preserve the structure and appearance semantics from source and reference images.
+% The proposed framework is based on denoising diffusion probabilistic models (DDPM) \cite{ho2020denoising} and preserves the structural information of the input clothing image when transferring the reference appearance.
+% Unlike the commonly used strategy in image transfer by diffusion models that take the source clothing image as input \cite{kwon2022diffusion}, we utilize the optimal transport properties of the DDPM encoder, transferring from the reference image to the new fashion output, denoted as \textbf{RefTransfer}. 
+As a result, the proposed DiffFashion can learn the patterns from the reference image and the output fashion remains realistic even if there is a big domain gap between source and reference images.
+% In addition, we use both the ViT and self-generated mask guidance by conditioned labels to preserve the structure from the source image. 
+The process is illustrated in Fig.~\ref{frame}.
+% First, we encode the appearance image with DDPM which is proven to be the optimal transport process to keep the high-appearance similarity. 
+% Then, we guidance the denoising process to transfer the structure information to match the clothing image. specifically, we use both the ViT and an automatically generated semantic mask by conditioned labels for structure guidance during the denoising process. This process is illustrated in Fig.~\ref{frame}.
+Our contributions are summarized as follows:
+\begin{itemize}
+    \item We propose a novel unsupervised diffusion model-based fashion design method. As far as we know, this is the first work that extends the diffusion model into the fashion design field.
+    \item We introduce a novel transfer strategy based on the optimal transport properties to gradually adapt the latent from the reference appearance image to the output clothing image, which addresses the issue of large domain gaps and differs from existing diffusion-based image translation methods.
+    \item We adopt the mixed guidance, including the mask guidance and ViT guidance, to further transfer both structure and appearance to the output fashion in the denoising process.
+    \item Extensive experimental zero-shot fashion design results, including \textit{handbags}, \textit{slippers}, \textit{pants} and \textit{hats} fashions, verify that our method achieves state-of-the-art (SOTA) performance in generating new fashions.
+    % \item We propose a novel structure-aware image transfer framework, which generates structure-preserving fashion designs without knowledge about output domains.
+    % \item We keep the appearance information by the optimal transport properties of the DDPM encoder.
+    % \item We employ mask guidance and ViT guidance to transfer structural information in the denoising process.
+    % \item Extensive experimental results verify that our method achieves state-of-the-art (SOTA) performance in clothing design.
+\end{itemize}
+
+The outline of the paper is as follows: In Section~\ref{sec:related_work}, we review state-of-the-art (SOTA) fashion design and image translation methods. Section~\ref{sec:ddpm} introduces the preliminary background of DDPM. We introduce our proposed method in Section~\ref{sec:method}. The experiments of our proposed method are provided in Section~\ref{sec:exp}, followed by the conclusion and future work in Section~\ref{sec:conclude}.

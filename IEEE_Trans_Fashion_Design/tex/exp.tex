@@ -1,0 +1,254 @@
+\section{Experiments}
+\label{sec:exp}
+
+In this section, we describe our fashion design dataset and experiment settings. We also demonstrate the qualitative and quantitative results to show the effectiveness of our proposed method.
+\subsection{Dataset} 
+
+\subsubsection{OceanBag} 
+To our best knowledge, there is no specific reference-based fashion design dataset currently. Thus, we collect a new dataset, namely \textit{OceanBag}, with real handbag images and ocean animal images as reference appearances for generating new fashion designs. 
+% So we conduct experiments on dataset collected by ourselves, which mainly consists of real bag pictures and real ocean animals pictures. 
+\textit{OceanBag} has 6,000 images of handbags in various scenes and 2,400 images of various marine lives in the real world. The 2,400 marine scene images contain more than 80 kinds of marine organisms, including fish, starfish, crabs, algae, and other sea creatures, as shown in Fig.~\ref{datasetfig}. We randomly select 40 pairs of images to conduct the experiment.
+
+% In the experiment, we randomly selected 30 images of bags from the \textit{OceanBag}, and to increase diversity, we also randomly selected 10 images of bags from the ImageNet \cite{deng2009imagenet}. The appearance images were all selected from the\textit{OceanBag}. In total, we used 40 pairs of images to conduct the experiment.
+
+\subsubsection{Other Clothing Datasets}
+To validate our method on a wider variety of clothing, we also conduct experiments using images from other clothing datasets \cite{fashion_dataset,clothing_dataset} as our source structure images. 
+% We use appearance images from the \textit{OceanBag} and randomly select 40 pairs of images based on their diversity for our experiments. 
+
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[scale=0.55]{figs/dataset.pdf}
+\caption{Samples from our proposed dataset of \textit{OceanBag}. The left part shows some examples of marine life images, and the right part shows some samples of handbag images.}
+\label{datasetfig}
+\end{figure*}
+
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.77\linewidth]{figs/output_fashion1.jpg}
+\caption{Comparison with state-of-the-art (SOTA) methods on \textit{OceanBag} dataset. 
+% Our results show better performance in both appearance and structure similarity.
+}
+\label{resbag}
+\end{figure*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.77\linewidth]{figs/output_fashion2.jpg}
+\caption{Comparison with other state-of-the-art (SOTA) methods on other fashions, including clothes, hats, shoes, t-shirts, pants, and dresses. 
+% Our results show better performance in both appearance and structure similarity.
+}
+\label{resclo}
+\end{figure*}
+
+
+
+\begin{table}[!t]
+\begin{center}
+\caption{Results of the user study on dataset \textit{OceanBag}. The output fashion images are evaluated based on their realism, structure, and appearance scores, ranging from 0 to 100. The overall performance is the average of the three scores. The best performance is shown in bold and the second best is shown in light blue.}
+\begin{tabular}{L{1.8cm}|C{0.7cm}C{1.3cm}C{1.3cm}C{1.3cm}}%{l| c c c c }
+     	\toprule
+         Method & \textbf{Overall}$\uparrow$ & Realism$\uparrow$ & Structure$\uparrow$ & Appearance$\uparrow$\\
+         \midrule
+          DiffuseIT\cite{kwon2022diffusion}  & \textcolor{cyan}{67.2} & $73.4 \pm 5.5$     &  $88.3  \pm 4.8 $ & $40.0  \pm 6.1$  \\
+          Splice\cite{tumanyan2022splicing} & 59.6 & $65.6  \pm 5.9$ &   $81.5  \pm 5.3$ & $31.9  \pm 6.3$  \\ 
+          WCT2\cite{yoo2019photorealistic} & 66.0 & $ \textbf{85.5}  \pm 2.4$ &$ \textbf{95.9}  \pm 1.4$ & $16.6  \pm 3.9$     \\
+          
+         SANet\cite{park2019arbitrary} & 56.1 & $47.7  \pm 3.3$ &   $74.9  \pm 4.5$ & $\textcolor{cyan}{45.7}  \pm 6.5$  \\
+           \textbf{Ours} & \textbf{73.6} &  $\textcolor{cyan}{79.8}  \pm 3.8$     &  $\textcolor{cyan}{91.6}  \pm 3.2$ &  $\textbf{49.4}  \pm 5.9$  \\
+          \bottomrule
+\end{tabular}
+
+\label{res_table}
+\end{center}
+\end{table}
+
+
+
+
+
+\begin{table}[!t]
+\begin{center}
+\caption{Evaluation results based on \textit{OceanBag}. The best performance is shown in bold and the second best is shown in light blue. ``L.app", ``L.struct",``M.rec" and ``M.prec." represent LPIPS with input appearance image, LPIPS with input clothing image, Mask-RCNN recall, and Mask-RCNN precision, respectively.}
+\begin{tabular}{l|c c c c c}
+     	\toprule
+         Method & L.app$\downarrow$ & L.struct$\downarrow$ & M.rec$\uparrow$ & M.prec$\uparrow$& FID $\downarrow$  \\
+          \midrule
+          DiffuseIT &0.762&0.571
+           & 0.15 &0.10 &200.3\\
+
+          Splice &0.782& 0.579&  0.03&0.02& 258.2\\
+          WCT2 &0.787&\textbf{0.378} & \textbf{0.43}  &\textbf{0.28}&\textbf{86.2} \\
+          SANet &\textcolor{cyan}{0.759} &0.659& 0.03 &0.02&318.0\\
+          \textbf{Ours}   &\textbf{0.754} &\textcolor{cyan}{0.488}    &  \textcolor{cyan}{0.28}& \textcolor{cyan}{0.26}&
+          \textcolor{cyan}{131.8}\\
+          \bottomrule
+\end{tabular}
+\label{res_bag}
+\end{center}
+\end{table}
+
+\begin{table}[!t]
+\begin{center}
+\caption{Evaluation results based on other fashion datasets. The best performance is shown in bold and the second best is shown in light blue. ``L.app", ``L.struct" represent LPIPS with input appearance image, LPIPS with input clothing image,  respectively.}
+\begin{tabular}{l|c c c}
+     	\toprule
+         Method & L.app$\downarrow$ & L.struct$\downarrow$ & FID $\downarrow$  \\
+          \midrule
+          DiffuseIT &0.771&0.572
+           &237.7\\
+
+          Splice &0.789& 0.624& 294.7\\
+          WCT2 &0.784&\textbf{0.411} &\textbf{93.4} \\
+          SANet &\textcolor{cyan}{0.766} &0.708& 321.6 \\
+          \textbf{Ours}   &\textbf{0.764} &\textcolor{cyan}{0.523}    &  \textcolor{cyan}{152.0}\\
+          \bottomrule
+\end{tabular}
+\label{res_clo}
+\end{center}
+\end{table}
+
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=1\linewidth]{figs/maskgen.pdf}
+    \caption{Illustration of mask generation by label condition.}
+    \label{fig:Mask Generation}
+\end{figure*}
+
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/messy.pdf}
+    \caption{The left three columns show hard examples with input images and generated messy masks. The right three columns show the fashion output with masks (w/. masks), without masks (w/o. masks), and DiffuseIT, respectively. }
+    \label{fig:my_label}
+\end{figure*}
+
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=0.85\linewidth]{figs/ablation.jpg}
+    \caption{The left three columns show examples with input images and generated masks. The right four columns show the fashion output with our full model, model without mask, model without ViT appearance guidance, and ViT without structure guidance, respectively.}
+    \label{fig:Mask Effectiveness}
+\end{figure*}
+
+
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=0.65\linewidth]{figs/failure1.pdf}
+    \caption{Examples of failure cases where no mask guidance achieves better results.
+    % : Not using a mask can yield better results. but our results are still good.(a) is ours result,(b) is ours result without mask and (c) is DiffuseIT result 
+    }
+    \label{Failure1}
+\end{figure*}
+
+
+\subsection{Experimental Setup}
+\label{setup}
+We conduct all experiments using a label-conditional diffusion model \cite{nichol2021improved} pre-trained on the ImageNet dataset \cite{deng2009imagenet} with $256\times256$ resolution. In all experiments, we use a diffusion step of $T$ = 120 and re-sampling repetitions of $N$ = 10. In a single RTX 3090 unit, it takes 20 seconds to generate each mask and 60 seconds to generate each image. For fairness of comparison, other parameters in the diffusion model are kept the same as \cite{kwon2022diffusion}.
+
+In the mask generation part, we set the binarization threshold to -0.2. Due to the stochastic nature of the diffusion model, we generate masks using three different sets of negative labels, including ``cellphone, forklift, pillow", ``waffle iron, washer, guinea pig" and ``brambling, echidna, custard apple". Then we choose the best one among them for guidance. To ensure a fair comparison, we run the baseline DiffuseIT \cite{kwon2022diffusion} three times as ours.
+
+In the guidance part, to mitigate the uncontrollable effect of the mask and avoid information loss when the structural gap between the two objects is too large, we use mask guidance in the first 30\% steps of the denoising stage. In the ViT guidance part, we set the coefficient of the appearance loss $\lambda_{app}$ to 0.1 and the structure loss $\lambda_{struct}$ to 1. We keep other parameters and further use color matcher, which is a sinple color transformation method, following~\cite{kwon2022diffusion}.
+
+\subsection{Evaluation Methods and Metrics} 
+There is currently no existing automatic metric suitable for evaluating fashion design across two natural images. To keep the fashion image realistic, the migration degree of the appearance and the similarity of the structure sometimes are mutually contradictory when measured. To compare among different methods, we follow existing appearance transfer/fashion design works \cite{tumanyan2022splicing,kwon2022diffusion,jing2019neural,kim2020deformable,mechrez2018contextual,park2020swapping}, which rely on human perceptual evaluation to validate the results. 
+% And we also show our results for qualitative comparison.
+Inspired by Tumanyan \textit{et al.} \cite{tumanyan2022splicing}, we also use other pre-trained models to measure the structural similarity of the results. Here, we use Mask-RCNN \cite{he2017mask} trained on COCO \cite{lin2014microsoft} to detect the generated results and calculate the recall rate and precision of Mask-RCNN. We also utilize perceptual image patch similarity (LPIPS) \cite{zhang2018unreasonable}, which is commonly used to measure the similarity between the generated images and the input structure and appearance images. To measure the authenticity of the generated images, we use the Frechet inception distance score (FID) \cite{heusel2017gans} metric to assess the realism and diversity of the generated dataset.
+
+\subsection{Experimental Results}
+We perform both quantitative and qualitative evaluations on the \textit{OceanBag} dataset and other fashion datasets \cite{clothing_dataset,fashion_dataset}. We compare our model with state-of-the-art (SOTA) methods, including Splice \cite{tumanyan2022splicing}, DiffuseIT \cite{kwon2022diffusion}, WCT2 \cite{yoo2019photorealistic} and SANet\cite{park2019arbitrary}. 
+Fig.~\ref{resbag} and Fig.~\ref{resclo} show qualitative results on \textit{OceanBag} and other fashions for all methods. In all examples, it can be seen that in terms of fashion design, our method has achieved better performances in terms of realism and structure, while completing appearance transfer. 
+As for the DINO-ViT-based image-to-image translation methods, DiffuseIT successfully keeps the structure for most images, but it shows less appearance similarity to the reference image. Though Splice transfers the appearance well, the generated results are far away from realistic fashion images.
+Parametric NST methods like WCT2 effectively retain the structure of the source image, but WCT2 outputs exhibit limited changes apart from color adjustments. Non-parametric NST methods like SANet successfully transfer the appearance. However, the results often suffer from color bleeding artifacts and thus show poor authenticity.
+
+We also conduct a user study to evaluate the samples and obtain subjective evaluations from participants. Specifically, we ask 30 users to score all the output fashion images from all methods for each input pair. Detailed questions we have asked are as follows: 1) Is the picture realistic? 2) Does the structure of the image resemble that of the input image? 3) Is the output appearance similar to the input appearance image? The scores range from 0 to 100. The overall score is the average of the three scores.
+We show the averaged subjective evaluation results in Table~\ref{res_table}~and~\ref{res_clo}. Our model obtains the best score in the overall performance and appearance correlation, and the second place in structure similarity and realism. WCT2 shows the best in realism and structure similarity scores, but it shows the worst score in appearance correlation because the outputs are almost unchanged from the inputs except for the overall color.
+Both the qualitative and subjective evaluations show the effectiveness of our proposed method.
+
+
+Following \cite{tumanyan2022splicing}, we also adopt other pre-trained models to evaluate the result.
+% Due to the lack of indicators for our task, we refer to the setting of \cite{tumanyan2022splicing}, and use other pre-trained models to evaluate the result. 
+We use the learned LPIPS score between input and output to verify the content preservation performance and the appearance similarity. We also apply the Mask-RCNN model pre-trained on the COCO dataset to detect the mask of the object of each method. The results are shown in Table~\ref{res_bag}. At the same time, since Mask-RCNN is trained on out-of-distribution (OOD) data, the overall recall rate is quite low. Our model demonstrates the second-best structure preservation performance. Though WCT2 achieves the best in the structure-aware evaluation, it only transforms the color for the whole image. Besides the structure preservation, our method achieves better appearance similarity than other methods. Some NST methods like SANet have a good appearance similarity, but they tend to transfer the whole image with color transformation and lose the authenticity, as shown in Fig.~\ref{resbag} and Fig.~\ref{resclo}.
+
+
+
+
+\subsection{Ablation Study}
+
+In order to verify the effectiveness of the method, we study the individual components of our method through several ablation studies.
+
+\subsubsection{Mask Generation} 
+% We randomly select several bag images with backgrounds from ImageNet and our dataset. % We use three different sets of labels to obtain three different semantic masks and show the best one in
+% We keep the same experimental setup as Section~\ref{setup} and show the masks in Fig.~\ref{fig:Mask Generation}. 
+We show some examples of mask generation with label conditions in Fig.~\ref{fig:Mask Generation}. Due to the randomness of the diffusion, the generated masks are not perfect. However, these masks can still preserve some of the overall structure prior of the foreground bags. In Fig.~\ref{fig:my_label}, we compare the results using generated messy masks, the results with no mask guidance, and the results of DiffuseIT. According to the figure, we can see that using messy masks still makes some improvement in most cases.
+% For most images, it can generate a foreground object mask that is suitable for our models. Due to the randomness of diffusion, in the last column, we show the scene where the mask is not good enough. But even so, our model still outperforms other models in most cases, as shown in Fig.~\ref{fig:my_label}. This does not mean that generating good results can be done with random mask or no mask at all. On the contrary, while a messy mask may not guide the generation of image structure completely, it still indicates the approximate shape of the object. This is particularly effective when our initial appearance image is far from fashion, as it can significantly bring the generated image closer to the clothing. Next, due to the similarity in shape between objects and clothing, ViT structral loss can capture similar structures of objects and complete the structural generation of details later on.
+
+\subsubsection{Mixed Guidance}
+We conduct experiments to validate the effectiveness of individual guidance in the denoising process. The results are shown in Fig.~\ref{fig:Mask Effectiveness} and Table~\ref{mask_table}.
+From the results, it can be observed that using mask guidance leads to a significant increase in structure similarity while only causing a slight decrease in appearance similarity. With ViT guidance, the CLS token in the last layer and the key vectors in the attention layers decouple the structure and appearance information very well. Moreover, as assumed in earlier sections, our image generation process mainly relies on the transfer of structural information. This is manifested as using ViT structure guidance leads to a significant increase in structure similarity, while only causing a slight decrease in appearance similarity. In addition, appearance guidance provides a little improvement in the metrics and increases the richness of local image appearance in some images.
+% \subsubsection{Mask Guidance}
+% We conduct an experiment on our model without the mask guidance part, as shown in Fig.~\ref{fig:Mask Effectiveness}. Fig.~\ref{fig:Mask Effectiveness}(a) shows the result without mask guidance and Fig.~\ref{fig:Mask Effectiveness} (b) presents the outputs of our model with mask guidance. Without mask guidance, in many images, the structure of the bag is destroyed during diffusion. In the last row of the figure, we show that for some images, using a mask may reduce the correlation of appearance, but 
+
+\begin{table}[!t]
+\begin{center}
+\caption{Evaluation about method with or without mask on \textit{OceanBag}. ``L.app", ``L.struct", ``M.rec" and ``M.prec" represent LPIPS with appearance image, LPIPS with clothing image, Mask-RCNN recall, and Mask-RCNN precision.}
+\begin{tabular}{l|c c c c c}
+     	\toprule
+         Method & L.struct$\downarrow$&L.app$\downarrow$ & M.rec$\uparrow$ & M.prec$\uparrow$ &FID$\downarrow$ \\
+          \midrule
+          Ours &\textbf{0.488}&0.754&\textcolor{cyan}{0.28}&\textcolor{cyan}{0.26}&\textcolor{cyan}{131.8}\\
+
+          w/o. mask &0.668&\textbf{0.731}&0.13&0.08&224.9\\
+          w/o. ViT-struct &0.556&\textcolor{cyan}{0.749}&0.18&0.15&188.1\\
+          w/o. ViT-app &\textcolor{cyan}{0.493}&0.766&\textbf{0.30}&\textbf{0.29}&\textbf{129.2}\\
+          \bottomrule
+          
+\end{tabular}
+\label{mask_table}
+\end{center}
+\end{table}
+
+
+% \subsubsection{Label-Condition} Because our model uses the diffusion model with label-condition, for a fair comparison, we replace the diffusion model of diffuseIT with the same model as ours and use the label ``bag'' for the condition in the denoising stage.
+% Fig.~\ref{fig:Comparition}(a) shows the results of DiffuseIT with label condition, and Fig.~\ref{fig:Comparition}(b) presents our method. Our method still shows better results in structure preservation, appearance similarity, and authenticity.
+% In addition, We show some results of a multi-modal guided diffusion model trained on the same amount of data. 
+% Fig.~\ref{text} shows the result of DiffuseIT with the text guidance. 
+% ``Handbag" to ``Handbag with marine life pattern" and ``Ocean style Handbag" are prompts for (a) and (b), respectively. 
+% We can see that a text-guided model cannot complete the task well.
+
+\subsubsection{Sensitivity Analysis}
+We conduct sensitivity analysis on some of the hyper-parameters including ViT structure guidance, mask threshold, and mask guidance ratio. We randomly sample four appearance images and five structure images to construct twenty pairs for evaluation. As shown in Fig.~\ref{sen}, 
+our results indicate that within a certain range, variations in hyper-parameters do not cause abrupt changes or breakdowns in the results, showing that our algorithm exhibits excellent robustness.
+
+
+\begin{figure*}[htbp]
+	\centering
+	\begin{subfigure}{0.325\linewidth}
+		\centering
+		\includegraphics[width=0.9\linewidth]{figs/sensitity/vit.pdf}
+		\caption{ViT structure guidance}
+		\label{chutian3}
+	\end{subfigure}
+	\centering
+	\begin{subfigure}{0.325\linewidth}
+		\centering
+		\includegraphics[width=0.9\linewidth]{figs/sensitity/thre.pdf}
+		\caption{Mask threshold}
+		\label{chutian3}
+	\end{subfigure}
+	\centering
+	\begin{subfigure}{0.325\linewidth}
+		\centering
+		\includegraphics[width=0.9\linewidth]{figs/sensitity/ratio.pdf}
+		\caption{Mask guidance ratio}
+		\label{chutian3}
+	\end{subfigure}
+	\caption{Sensitivity analysis on some of the hyper-parameters. The left vertical axis represents LPIPS, while the right vertical axis represents FID.}
+	\label{sen}
+\end{figure*}
+
+
+% In addition, since our mask is obtained based on diffusion, which is pre-trained on ImageNet, we can only obtain masks for images within the ImageNet data distribution. For other complex scenes, generating masks is more difficult and may not result in good generation outcomes, as shown in the Fig.~\ref{Failure2}.
+
+% \subsubsection{Failure Case}
+% Like how in the style transfer process, the style is transformed but structural information is also lost, information transfer comes at a cost. This also applies to structural information transfer. In most cases, we need to use a mask to achieve structural transfer. However, for a small number of cases where the source and reference images have simple structures, ViT can be used to achieve structural transfer. In such cases, using a mask can lead to a loss of visual similarity, as shown in the Fig.~\ref{Failure1}, and we have conducted a structural similarity evaluation between using masks with default parameters and not using masks as shown in Table.~\ref{mask_table}. It can be observed that there is a slight loss in appearance, but there is a significant improvement in structure. Besides, due to the controllability of diffusion relative to GANs, we can control the generation process by adjusting the process parameters and intensity parameters of the mask guidance, in order to strike a balance between structure and appearance. 
+% As our mask is obtained based on diffusion, which is pre-trained on ImageNet, we can only obtain masks for images within the ImageNet data distribution. For other complex scenes, generating masks is more difficult and may not result in good generation outcomes, as shown in the Fig.~\ref{Failure2}
